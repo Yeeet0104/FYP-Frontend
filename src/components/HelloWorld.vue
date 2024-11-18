@@ -2,6 +2,7 @@
   <div>
     <h1>Vue.js + Node.js Integration</h1>
     <p>{{ message }}</p>
+    <p> hio hio </p>
   </div>
 </template>
 

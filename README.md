@@ -32,7 +32,7 @@ node server.js
 npm run serve
 
 # git commands 
-
+## starting
 git branch <name>
 
 git switch <name>
@@ -43,9 +43,9 @@ git commit -m "ok chun"
 
 git push -u origin <branch-name>
 
--after done merged
+##after done merged
 git switch main
 
--then
+##then
 git pull origin main
 

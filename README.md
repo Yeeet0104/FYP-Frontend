@@ -22,3 +22,30 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+# how to start backend and frontend
+-run backend
+node server.js
+
+-run frontend
+npm run serve
+
+# git commands 
+
+git branch <name>
+
+git switch <name>
+
+git add <file>
+
+git commit -m "ok chun"
+
+git push -u origin <branch-name>
+
+-after done merged
+git switch main
+
+-then
+git pull origin main
+

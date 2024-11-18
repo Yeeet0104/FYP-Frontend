@@ -43,9 +43,9 @@ git commit -m "ok chun"
 
 git push -u origin <branch-name>
 
-##after done merged
+## after done merged
 git switch main
 
-##then
+## then
 git pull origin main
 

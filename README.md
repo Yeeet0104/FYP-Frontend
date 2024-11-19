@@ -41,7 +41,7 @@ git add <file>
 
 git commit -m "ok chun"
 
-git push -u origin <branch-name>
+git push -u origin 'branch-name'
 
 ## after done merged
 git switch main

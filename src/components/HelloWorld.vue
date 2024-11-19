@@ -18,5 +18,6 @@ export default {
     const data = await response.json();
     this.message = data.message;
   },
+  
 };
 </script>

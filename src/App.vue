@@ -12,11 +12,13 @@
 
 <script>
 import Sidebar from "./components/AppSidebar.vue";
-
+import QuestionGeneration from "./components/questionGeneration.vue";
+import LoginPage from "./components/loginPage.vue";
 export default {
   components: {
     Sidebar,
-
+    QuestionGeneration,
+    LoginPage
   },
   data() {
     return {
@@ -27,6 +29,10 @@ export default {
     handleMenuSelection(menuName) {
       // Update selected menu
       this.selectedMenu = menuName;
+    },
+    handleLoginSuccess() {
+      // Navigate to Question Generation after successful login
+      this.selectedMenu = 'Question Generation';
     },
   },
 };

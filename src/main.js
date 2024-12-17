@@ -8,7 +8,6 @@ import "vue-toastification/dist/index.css";
 import CircleProgress from 'vue3-circle-progress';
 
 const app = createApp(App);
-app.mount('#app');
 app.use(Toast);
 app.use(router);
 app.component('circle-progress', CircleProgress); 

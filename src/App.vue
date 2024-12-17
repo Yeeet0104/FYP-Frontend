@@ -24,6 +24,12 @@
         <h1 class="text-2xl font-bold">Mock Interview Content</h1>
         <p>Prepare for interviews with this practice tool.</p>
       </div>
+      <div v-else-if="selectedMenu === 'Question Generation'">
+        <QuestionGeneration />
+      </div>
+      <div v-else-if="selectedMenu === 'Login'">
+        <LoginPage />
+      </div>
       <div v-else>
         <h1 class="text-2xl font-bold">Welcome to studyhub</h1>
       </div>
@@ -33,10 +39,13 @@
 
 <script>
 import Sidebar from "./components/AppSidebar.vue";
-
+import QuestionGeneration from "./components/questionGeneration.vue";
+import LoginPage from "./components/loginPage.vue";
 export default {
   components: {
     Sidebar,
+    QuestionGeneration,
+    LoginPage
   },
   data() {
     return {
@@ -47,6 +56,10 @@ export default {
     handleMenuSelection(menuName) {
       // Update selected menu
       this.selectedMenu = menuName;
+    },
+    handleLoginSuccess() {
+      // Navigate to Question Generation after successful login
+      this.selectedMenu = 'Question Generation';
     },
   },
 };

@@ -2,7 +2,6 @@
   <div class="flex">
     <!-- Sidebar -->
     <Sidebar v-if="showSidebar" @menu-clicked="handleMenuSelection" />
-
     <!-- Main Content -->
     <div class="flex-grow p-6">
       <router-view />
@@ -12,7 +11,6 @@
 
 <script>
 import Sidebar from "./components/AppSidebar.vue";
-
 export default {
   components: {
     Sidebar,
@@ -26,6 +24,10 @@ export default {
     handleMenuSelection(menuName) {
       // Update selected menu
       this.selectedMenu = menuName;
+    },
+    handleLoginSuccess() {
+      // Navigate to Question Generation after successful login
+      this.selectedMenu = 'Question Generation';
     },
   },
   computed: {

@@ -84,7 +84,6 @@ export default {
       isSidebarOpen: true,
       menuItems: [
         { name: "Learn", icon: "book" },
-        { name: "Practice Test", icon: "pencil-alt" },
         {
           name: "Practice English",
           icon: "language",
@@ -94,8 +93,7 @@ export default {
             { name: "Mock Interview" },
           ],
         },
-        { name: "Question Generation", icon: "icon-class-for-question" },
-        { name: "Login", icon: "icon-class-for-login" },
+        { name: "Practice Test", icon: "pencil-alt" },
       ],
     };
   },

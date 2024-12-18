@@ -11,7 +11,7 @@ const routes = [
   { path: '/register', component: RegisterUser },
   { path: '/mock-interview', component: MockInterview, meta: { requiresAuth: true } },
   { path: '/Speaking', component: ScriptRecording, meta: { requiresAuth: true } },
-  { path: '/question-generation', component: QuestionGeneration, meta: { requiresAuth: true } }
+  { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({

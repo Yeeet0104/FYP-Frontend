@@ -20,6 +20,13 @@
       </div>
     </div>
 
+    <!-- Loading Overlay for Evaluation -->
+    <div v-if="isEvaluating" class="fixed inset-0 bg-gray-800 bg-opacity-70 z-50 flex items-center justify-center">
+      <div class="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
+        <div class="loader-evaluation mb-4"></div>
+        <p class="text-gray-900 font-semibold text-lg">Evaluating Answer...</p>
+      </div>
+    </div>
 
     <div class="border-2 border-black rounded-xl p-3 mt-4 text-white bg-gray-800">
 
@@ -81,9 +88,9 @@
         <button v-else class="rounded-3xl bg-red-500 text-white px-6 py-2 text-sm font-semibold" @click="resetForm" > Re-Generate </button>
       </div>
 
-      <!-- Use Case 1 Box -->
-      <div v-if="useCase1" class="use-case-box rounded-xl p-4 my-4 bg-blue-100 text-blue-900">
-        <h3 class="font-bold text-lg mb-2">Use Case</h3>
+      <!-- Scenario Case 1 Box -->
+      <div v-if="useCase1 && questionType === 'Short Answer'" class="use-case-box rounded-xl p-4 my-4 bg-blue-100 text-blue-900">
+        <h3 class="font-bold text-lg mb-2">Case Scenario</h3>
         <p>{{ useCase1 }}</p>
       </div>
 
@@ -108,18 +115,29 @@
               </div>
               <div class="flex flex-col items-start mt-4">
                 <button class="rounded-sm bg-[#86c9e8] text-gray-900 px-2 py-2 mb-2 text-sm font-semibold" @click="checkGrammar(index)">Check Grammar</button>
-                <button class="rounded-sm bg-[#ceefdd] text-gray-900 px-5 py-2 mt-2 text-sm font-semibold" @click="toggleAnswer(index)">
-                  {{ showAnswer[index] ? 'Hide Answer' : 'See Answer' }}
+                <button class="rounded-sm bg-[#ceefdd] text-gray-900 px-4 py-2 mt-2 text-sm font-semibold" @click="toggleAnswer(index)">
+                  Check Answer
                 </button>
               </div>
               
               <!-- Display the suggested answer for the question -->
-              <div v-if="showAnswer[index]" class="mt-4 p-3 text-green-500 bg-white rounded">
-                <strong>Suggested Answer:</strong> {{ answersFile1[index] }}
+              <div v-if="answersEvaluation[index]" class="mt-4 p-3 text-green-500 bg-white rounded">
+                {{ answersEvaluation[index] }}
+                <div v-if="userAnswerScore[index] !== 'Correct'">
+                  <br>
+                  <br>
+                  <strong>Suggested Anwser: </strong>{{ answersFile1[index] }}
+                </div>                
               </div>
             </div>
           </li>
         </ul>
+      </div>
+
+      <!-- Scenario Case 2 Box -->
+      <div v-if="useCase2 && questionType === 'Short Answer'" class="use-case-box rounded-xl p-4 my-4 bg-blue-100 text-blue-900">
+        <h3 class="font-bold text-lg mb-2">Case Scenario</h3>
+        <p>{{ useCase2 }}</p>
       </div>
 
       <!-- Questions for Second File -->
@@ -138,23 +156,34 @@
                 ></i>
               </div>  
               <textarea v-model="userAnswerFile2[index]" class="w-full p-2 mt-5 rounded text-black bg-gray-100" placeholder="Type your answer here..."></textarea>
-              <div v-if="grammarFeedback[index]" class="mt-2 p-3 text-green">
-                <p>{{ grammarFeedback[index] }}</p> 
+              <div v-if="grammarFeedback2[index]" class="mt-2 p-3 text-green">
+                <p>{{ grammarFeedback2[index] }}</p> 
               </div>
               <div class="flex flex-col items-start mt-4">
                 <button class="rounded-sm bg-[#86c9e8] text-gray-900 px-2 py-2 mb-2 text-sm font-semibold" @click="checkGrammar(index)">Check Grammar</button>
-                <button class="rounded-sm bg-[#ceefdd] text-gray-900 px-5 py-2 mt-2 text-sm font-semibold" @click="toggleAnswer(index)">
-                  {{ showAnswer[index] ? 'Hide Answer' : 'See Answer' }}
+                <button class="rounded-sm bg-[#ceefdd] text-gray-900 px-4 py-2 mt-2 text-sm font-semibold" @click="toggleAnswer(index)">
+                  Check Answer
                 </button>
               </div>
 
-              <!-- Display the correct answer for the question -->
-              <div v-if="showAnswer[index]" class="mt-4 p-3 text-green-500 bg-white rounded">
-                <strong>Correct Answer:</strong> {{ answersFile1[index] }}
+              <!-- Display the suggested answer for the question -->
+              <div v-if="answersEvaluation2[index]" class="mt-4 p-3 text-green-500 bg-white rounded">
+                {{ answersEvaluation2[index] }}
+                <div v-if="userAnswerScore2[index] !== 'Correct'">
+                  <br>
+                  <br>
+                  <strong>Suggested Anwser: </strong>{{ answersFile2[index] }}
+                </div>                
               </div>
             </div>
           </li>
         </ul>
+      </div>
+
+      <!-- Scenario Case 1 Box -->
+      <div v-if="useCase1 && questionType === 'Multiple Choice Questions (MCQ)'" class="use-case-box rounded-xl p-4 my-4 bg-blue-100 text-blue-900">
+        <h3 class="font-bold text-lg mb-2">Case Scenario</h3>
+        <p>{{ useCase1 }}</p>
       </div>
 
       <!-- MCQ for First File -->
@@ -176,6 +205,12 @@
             </div>            
           </li>
         </ul>
+      </div>
+
+      <!-- Scenario Case 2 Box -->
+      <div v-if="useCase2 && questionType === 'Multiple Choice Questions (MCQ)'" class="use-case-box rounded-xl p-4 my-4 bg-blue-100 text-blue-900">
+        <h3 class="font-bold text-lg mb-2">Case Scenario</h3>
+        <p>{{ useCase2 }}</p>
       </div>
 
       <!-- MCQ for Second File -->
@@ -266,6 +301,7 @@ export default {
       showExtraFileUpload: false,
       errorMessage: [],
       grammarFeedback: [],
+      grammarFeedback2: [],
       showAnswer: [],
       isBookmark: [],
       isLoading: false,
@@ -276,6 +312,12 @@ export default {
       checkAnsBtnVisible: true,
       includeUseCase: false,
       useCase1: "",
+      useCase2: "",
+      answersEvaluation: [],
+      isEvaluating: false,
+      userAnswerScore: [],
+      answersEvaluation2: [],
+      userAnswerScore2: []
     };
   },methods: {
     async handleFileUpload(event) {
@@ -339,6 +381,9 @@ export default {
                   currentOptions1 = [];
                 } else if (item.startsWith('Answer:')) {
                   this.mcqAnswersForFile1.push(item.replace('Answer: ', '').trim());
+                } else if(item.match(/^Use Case:/i)){
+                  const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                  this.useCase1 = useCase;
                 } else {
                   const option = item.replace(/^[A-D][).]\s*/, '');
                   currentOptions1.push(option);
@@ -364,6 +409,9 @@ export default {
                   currentOptions1 = [];
                 } else if (item.startsWith('Answer:')) {
                   this.mcqAnswersForFile1.push(item.replace('Answer: ', '').trim());
+                } else if(item.match(/^Use Case:/i)){
+                  const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                  this.useCase1 = useCase;
                 } else {
                   const option = item.replace(/^[A-D][).]\s*/, '');
                   currentOptions1.push(option);
@@ -387,6 +435,9 @@ export default {
                   currentOptions2 = [];
                 } else if (item.startsWith('Answer:')) {
                   this.mcqAnswersForFile2.push(item.replace('Answer: ', '').trim());
+                } else if(item.match(/^Use Case:/i)){
+                  const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                  this.useCase2 = useCase;
                 } else {
                   const option = item.replace(/^[A-D][).]\s*/, '');
                   currentOptions2.push(option);
@@ -417,6 +468,9 @@ export default {
                         if (this.answersFile1.length > 0) {
                             this.answersFile1[this.answersFile1.length - 1] = answer; // Assign answer to the latest question
                         }
+                    }else if(item.match(/^Use Case:/i)){
+                      const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                      this.useCase1 = useCase;
                     }
                 });
 
@@ -435,13 +489,16 @@ export default {
                         if (this.answersFile2.length > 0) {
                             this.answersFile2[this.answersFile2.length - 1] = answer; // Assign answer to the latest question
                         }
+                    }else if(item.match(/^Use Case:/i)){
+                      const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                      this.useCase2 = useCase;
                     }
                 });
             } else {
                 // Process questions and answers for a single file
                 this.questionsForFile1 = [];
                 this.answersFile1 = [];
-                console.log('Response data:', response.data.questions);
+
                 response.data.questions.forEach((item) => {
                     const match = item.match(/^(\d+)\.\s*(.*)/i); // Match questions starting with a number
                     if (match) {
@@ -458,7 +515,6 @@ export default {
                       this.useCase1 = useCase;
                     }
                 });
-                console.log('Answers:', this.answersFile1);
             }
        }
           this.isGenerated = true;
@@ -504,6 +560,7 @@ export default {
       this.showExtraFileUpload = false;
       this.errorMessage = [];
       this.grammarFeedback = [];
+      this.grammarFeedback2 = [];
       this.showAnswer = [];
       this.isBookmark = [];
       this.isLoading = false;
@@ -514,13 +571,18 @@ export default {
       this.checkAnsBtnVisible = true;
       this.includeUseCase = false;
       this.useCase1 = "";
+      this.useCase2 = "";
+      this.answersEvaluation = [];
+      this.userAnswerScore = [];
+      this.answersEvaluation2 = [];
+      this.userAnswerScore2 = [];
     },
     async checkGrammar(index) {
       this.isCheckingGrammar = true;
       // Check if answers are valid before sending to the backend
         try {
           const userAnswer = this.userAnswerFile1[index];
-          const userAnswer2 = this.userAnswerFile2[index];
+          const userAnswer2 = this.extraUploadedFile ? this.userAnswerFile2[index] : null;
 
           const response = await axios.post('http://localhost:8001/check-grammar', {
             userAnswerFile1: userAnswer,
@@ -534,16 +596,81 @@ export default {
           const feedback = response.data.feedback;
           const feedback2 = response.data.feedback2;
           this.grammarFeedback[index] = feedback;
-          this.grammarFeedback[index] = feedback2;
+          this.grammarFeedback2[index] = feedback2;
         } catch (error) {
           console.error('Error checking grammar:', error);
           alert('Error checking grammar: ' + error.message);
         }finally{
           this.isCheckingGrammar = false;
         }
-    },toggleAnswer(index) {
-      this.showAnswer[index] = !this.showAnswer[index];
-    },
+    },async toggleAnswer(index) {
+  this.isEvaluating = true;
+  try {
+    const requestBody = {};
+
+    // Add file 1 data if it exists
+    if (this.questionsForFile1?.[index] && this.userAnswerFile1?.[index]) {
+      requestBody.questionsForFile1 = this.questionsForFile1[index];
+      requestBody.userAnswerFile1 = this.userAnswerFile1[index];
+      requestBody.useCase1 = this.useCase1 || '';
+    }
+
+    // Add file 2 data if it exists
+    if (this.questionsForFile2?.[index] && this.userAnswerFile2?.[index]) {
+      requestBody.questionsForFile2 = this.questionsForFile2[index];
+      requestBody.userAnswerFile2 = this.userAnswerFile2[index];
+      requestBody.useCase2 = this.useCase2 || '';
+    }
+
+    // Check if we have any data to send
+    if (Object.keys(requestBody).length === 0) {
+      throw new Error('Please provide an answer before evaluating');
+    }
+
+    console.log('Sending request to evaluate answer:', requestBody);
+
+    // Post request to the backend for answer evaluation
+    const response = await axios.post('http://localhost:8002/evaluate-answer', requestBody,{
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Received evaluation response:', response.data);
+
+    if (response.data.evaluation) {
+  // Extract the evaluation content
+  const evaluation = response.data.evaluation;
+  const evaluationContent = evaluation.replace(/^Evaluation:\s*/, '').trim();
+
+  this.answersEvaluation[index] = evaluationContent;
+  const scoreMatch = evaluation.match(/Score:\s*(\w+)/);
+  if (scoreMatch) {
+    const score = scoreMatch[1];
+    this.userAnswerScore[index] = score;
+  }
+}
+
+if (response.data.evaluation2) {
+  // Extract the evaluation content
+  const evaluation2 = response.data.evaluation2;
+  const evaluationContent2 = evaluation2.replace(/^Evaluation:\s*/, '').trim();
+  this.answersEvaluation2[index] = evaluationContent2;
+
+  const scoreMatch2 = evaluation2.match(/Score:\s*(\w+)/);
+  if (scoreMatch2) {
+    const score2 = scoreMatch2[1];
+    this.userAnswerScore2[index] = score2;
+  }
+}   
+
+  } catch (error) {
+    console.error('Error evaluating answer:', error);
+    alert('Error evaluating answer: ' + error.message);
+  } finally {
+    this.isEvaluating = false;
+  }
+},
     selectOption(index, option) {
       this.$set(this.answers, index, option);
     },
@@ -666,6 +793,15 @@ resetQuiz() {
 input[type="radio"]:checked + .custom-radio {
   background-color: #4bf758;
   color: white;
+}
+
+.loader-evaluation {
+  border: 4px solid #e0e0e0; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
 }
 
 .loading-overlay {

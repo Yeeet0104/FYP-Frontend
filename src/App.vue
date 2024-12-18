@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <!-- Sidebar -->
-    <Sidebar @menu-clicked="handleMenuSelection" />
+    <Sidebar v-if="showSidebar" @menu-clicked="handleMenuSelection" />
 
     <!-- Main Content -->
     <div class="flex-grow p-6">
@@ -16,7 +16,6 @@ import Sidebar from "./components/AppSidebar.vue";
 export default {
   components: {
     Sidebar,
-
   },
   data() {
     return {
@@ -27,6 +26,12 @@ export default {
     handleMenuSelection(menuName) {
       // Update selected menu
       this.selectedMenu = menuName;
+    },
+  },
+  computed: {
+    showSidebar() {
+      // Hide sidebar if the current route is '/login' or '/register'
+      return this.$route.path !== "/login" && this.$route.path !== "/register";
     },
   },
 };

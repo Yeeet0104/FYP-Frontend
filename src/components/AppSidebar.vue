@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-gray-900 text-white w-64 min-h-screen flex flex-col">
     <!-- Sidebar Toggle Button for Mobile -->
     <button
       @click="isSidebarOpen = !isSidebarOpen"
@@ -9,7 +9,7 @@
     </button>
 
     <!-- Sidebar -->
-    <div :class="{ hidden: !isSidebarOpen }" class="bg-gray-900 text-white w-64 h-auto flex flex-col min-h-screen">
+    <div :class="{ hidden: !isSidebarOpen }" class="bg-gray-900 text-white w-64 h-auto flex-grow">
       <!-- Sidebar Header -->
       <div class="flex items-center justify-center p-4 border-b border-gray-700">
         <div class="flex items-center">

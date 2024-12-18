@@ -50,8 +50,9 @@ export default {
                     body: JSON.stringify({ username: this.username, password: this.password }),
                 });
                 const data = await response.json();
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
+                console.log('Login response:', data);
+                if (data.accessToken) {
+                    localStorage.setItem('token', data.accessToken);
                     this.$router.push('/mock-interview');
                 } else {
                     alert('Invalid credentials');

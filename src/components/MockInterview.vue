@@ -5,7 +5,13 @@
 
       <!-- Sidebar -->
       <div class="bg-gray-900 text-white w-64 h-full flex-shrink-0 p-4">
-        <h2 class="text-lg font-bold mb-4">Conversation History</h2>
+        <!-- New Conversation Button -->
+        <div class="mb-4">
+          <h2 class="text-lg font-bold mb-4">Conversation History</h2>
+          <button @click="startNewConversation" class="px-4 py-2 bg-red-500 text-white rounded">
+            Start New Conversation
+          </button>
+        </div>
         <ul>
           <li v-for="(conversation, index) in conversations" :key="index"
             @click="loadConversation(conversation.conversation_id)"
@@ -36,7 +42,12 @@
             </select>
           </div>
         </div>
-
+        <div v-if="audioUrl" class="mt-4">
+          <button @click="playAudio" class="px-4 py-2 bg-blue-500 text-white rounded">
+            Play Response
+          </button>
+          <audio ref="audioPlayer" :src="audioUrl" controls style="display: none;"></audio>
+        </div>
         <!-- Chat UI -->
         <div class="chat-box bg-gray-50 border rounded p-4 h-96 overflow-y-auto">
           <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg.sender]">
@@ -70,7 +81,6 @@
           <div v-for="(feedbackItem, index) in feedbackHistory" :key="index" class="mb-4">
             <p><strong>User Response:</strong> {{ feedbackItem.userMessage }}</p>
             <p><strong>Feedback:</strong> {{ feedbackItem.feedback }}</p>
-            <p><strong>Follow-Up Question:</strong> {{ feedbackItem.followUpQuestion }}</p>
           </div>
         </div>
       </div>
@@ -88,9 +98,11 @@ export default {
       audioBlob: null,
       interviewScore: null,
       selectedDifficulty: "easy",
+      selectedHistoryId: null, // ID of the selected conversation
       feedbackHistory: [], // Array to store feedback for each interaction
       showFeedback: true, // Toggle state for feedback panel
       conversations: [], // Initialize conversations as an empty array
+      audioUrl: null, // URL for bot response audio
     };
   },
   methods: {
@@ -100,6 +112,13 @@ export default {
       } else {
         this.stopRecording();
       }
+    },
+    startNewConversation() {
+      // Reset chat history and feedback
+      this.chatHistory = [{ sender: "Bot", text: "Welcome to your mock interview! Please introduce yourself." }];
+      this.feedbackHistory = [];
+      this.selectedHistoryId = null; // Clear the conversation ID
+      console.log("Started a new conversation.");
     },
     async startRecording() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -121,7 +140,12 @@ export default {
       formData.append("type", this.selectedType);
       formData.append("difficulty", this.selectedDifficulty);
       formData.append("audio", this.audioBlob, "answer.wav");
-      formData.append("history", JSON.stringify(this.chatHistory));
+      // Include conversationId for continuing sessions
+      if (this.selectedHistoryId) {
+        formData.append("conversationId", this.selectedHistoryId);
+      } else {
+        formData.append("history", JSON.stringify(this.chatHistory));
+      }
 
       // Add User's answer placeholder while processing
       this.chatHistory.push({ sender: "User", text: "Processing your answer..." });
@@ -152,6 +176,21 @@ export default {
           followUpQuestion: data.follow_up_question,
         });
 
+        if (data.audio_filename) {
+          // Fetch the audio file from the separate endpoint
+          const audioResponse = await fetch(`http://localhost:3000/get-audio/${data.audio_filename}`,{
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (audioResponse.ok) {
+            const audioBlob = await audioResponse.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            // Auto-play the audio
+            const audio = new Audio(audioUrl);
+            audio.play();
+          }
+        }
         // Store conversation in history
         await this.storeConversation(userMessage, botResponse);
 
@@ -161,6 +200,9 @@ export default {
     },
     toggleFeedback() {
       this.showFeedback = !this.showFeedback;
+    },
+    playAudio() {
+      this.$refs.audioPlayer.play();
     },
     async storeConversation(userMessage, botResponse) {
       try {
@@ -173,7 +215,7 @@ export default {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            conversationId: this.getConversationId(), // Generate or retrieve current conversation ID
+            conversationId: this.selectedHistoryId || Date.now(), // Generate or retrieve current conversation ID
             userMessage,
             botResponse,
           }),
@@ -188,15 +230,6 @@ export default {
       } catch (error) {
         console.error("Error storing conversation:", error);
       }
-    },
-
-    getConversationId() {
-      // Example: Generate or retrieve the current conversation ID
-      // You can store this in Vue's data or local storage to keep track of sessions
-      if (!this.currentConversationId) {
-        this.currentConversationId = Date.now(); // Use timestamp as a unique ID
-      }
-      return this.currentConversationId;
     },
 
     async fetchConversations() {
@@ -223,7 +256,9 @@ export default {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await response.json();
-
+        // Update selectedHistoryId for continuation
+        this.selectedHistoryId = conversationId;
+        this.feedbackHistory = [];
         // Clear the chatHistory before loading a new conversation
         this.chatHistory = [];
 
@@ -234,6 +269,12 @@ export default {
           }
           if (entry.bot_response) {
             this.chatHistory.push({ sender: "Bot", text: entry.bot_response });
+          }
+          if (entry.feedback) {
+            this.feedbackHistory.push({
+              userMessage: entry.user_message,
+              feedback: entry.feedback,
+            });
           }
         });
 

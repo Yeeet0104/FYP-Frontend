@@ -2,7 +2,6 @@
   <div class="flex">
     <!-- Sidebar -->
     <Sidebar @menu-clicked="handleMenuSelection" />
-
     <!-- Main Content -->
     <div class="flex-grow p-6">
       <router-view />
@@ -12,13 +11,9 @@
 
 <script>
 import Sidebar from "./components/AppSidebar.vue";
-import QuestionGeneration from "./components/questionGeneration.vue";
-import LoginPage from "./components/loginPage.vue";
 export default {
   components: {
     Sidebar,
-    QuestionGeneration,
-    LoginPage
   },
   data() {
     return {

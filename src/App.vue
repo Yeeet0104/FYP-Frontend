@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <!-- Sidebar -->
-    <Sidebar @menu-clicked="handleMenuSelection" />
+    <Sidebar v-if="showSidebar" @menu-clicked="handleMenuSelection" />
     <!-- Main Content -->
     <div class="flex-grow p-6">
       <router-view />
@@ -28,6 +28,12 @@ export default {
     handleLoginSuccess() {
       // Navigate to Question Generation after successful login
       this.selectedMenu = 'Question Generation';
+    },
+  },
+  computed: {
+    showSidebar() {
+      // Hide sidebar if the current route is '/login' or '/register'
+      return this.$route.path !== "/login" && this.$route.path !== "/register";
     },
   },
 };

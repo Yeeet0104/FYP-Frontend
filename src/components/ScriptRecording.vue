@@ -1,9 +1,9 @@
 <template>
-  <div class="h-full">
+  <div class="h-full flex flex-col">
     <!-- Left Section: Script Generation -->
-    <div class="grid grid-cols-2 h-4/5">
+    <div class="flex-grow grid grid-cols-2 gap-6">
       <!-- Script Options and Generation -->
-      <div class="col-span-1 bg-gray-100 p-6 m-3 rounded">
+      <div class="bg-gray-100 p-6 m-3 rounded">
         <!-- Dropdown for tone -->
         <label class="block mb-2 font-semibold">Tone:</label>
         <select v-model="selectedTone" class="w-full mb-4 p-2 border rounded">
@@ -13,7 +13,7 @@
           <option value="friendly">Friendly</option>
         </select>
 
-        <textarea v-model="script" class="resize-none w-full h-3/5 border rounded-lg p-4 focus:ring"
+        <textarea v-model="script" class="resize-none w-full h-2/5 border rounded-lg p-4 focus:ring"
           readonly></textarea>
         <button @click="generateScript" class="w-full mt-4 bg-purple-500 text-white rounded-lg px-4 py-2">
           Generate Script
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Audio Recording and Evaluation -->
-      <div class="col-span-1 bg-gray-50 p-6 m-3 rounded">
+      <div class="bg-gray-50 p-6 m-3 rounded">
         <audio v-if="audioBlob" controls :src="audioUrl" class="mt-6 w-full"></audio>
         <div class="grid grid-cols-2 justify-center w-full">
           <button @click="toggleRecording" class="col-span-1 py-4 px-2 m-3 bg-red-500 text-white rounded-lg">
@@ -34,42 +34,8 @@
         </div>
       </div>
     </div>
-
-    <!-- <div  class="m-6 bg-gray-100 p-4  rounded-lg shadow-md"> -->
-    <!-- <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3> -->
-
-    <!-- Circular Scores -->
-
-
-    <!-- Highlighted Transcription -->
-    <!-- <div class="mb-6">
-        <h4 class="text-lg font-bold">Transcription:</h4>
-        <p>
-          <span 
-            class="rounded px-2 mx-1 inline-block">
-           TESTING
-          </span>
-        </p>
-      </div> -->
-
-
-    <!-- <div class="mb-6">
-        <h4 class="text-lg font-bold">Detailed Feedback:</h4>
-        <div>
-          <div v-for="i in 10" :key="i"
-            class="bg-gray-200 p-4 m-2 rounded shadow-md">
-            <ul class="list-disc pl-5 text-gray-800">
-              <li>{{ i }}</li>
-            </ul>
-          </div>
-        </div>
-
-      </div> -->
-
-    <!-- </div> -->
-
     <!-- Feedback Section -->
-    <div v-if="feedback.feedback" class="m-6 bg-gray-100 p-4 rounded-lg shadow-md h-full max-h-[80vh]">
+    <div v-if="feedback.feedback" class="bg-gray-100 p-6 mt-4 rounded-lg shadow-md overflow-y-auto max-h-[80vh]">
       <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
       <!-- Circular Scores -->
@@ -134,6 +100,16 @@
           </span>
         </p>
       </div>
+      <div class="mb-6">
+        <h4 class="text-lg font-bold">Transcription:</h4>
+        <p>
+          <span v-for="(word, index) in highlightedOriginal" :key="'o' + index" v-html="word"></span>
+        </p>
+        <h4 class="text-lg font-bold mt-4">User Input:</h4>
+        <p>
+          <span v-for="(word, index) in highlightedUser" :key="'u' + index" v-html="word"></span>
+        </p>
+      </div>
 
 
       <div class="mb-6">
@@ -161,6 +137,7 @@
 
 <script>
 import CircleProgress from "vue3-circle-progress";
+import diff_match_patch from "diff-match-patch";
 
 export default {
   data() {
@@ -172,11 +149,57 @@ export default {
       audioBlob: null,
       audioUrl: null,
       feedback: {},
-      CircleProgress
+      CircleProgress,
+      highlightedOriginal: [], // Array to hold highlighted original script words
+      highlightedUser: [],     // Array to hold highlighted user words
     };
   },
   methods: {
+    highlightDifferences() {
+      const dmp = new diff_match_patch();
 
+      // Tokenize text into words
+      const originalWords = this.originalText.split(/\s+/);
+      const userWords = this.userText.split(/\s+/);
+
+      const originalTokens = [];
+      const userTokens = [];
+
+      let originalIndex = 0;
+      let userIndex = 0;
+
+      // Align words while avoiding false positives
+      while (originalIndex < originalWords.length || userIndex < userWords.length) {
+        const originalWord = originalWords[originalIndex] || "";
+        const userWord = userWords[userIndex] || "";
+
+        if (originalWord.toLowerCase() === userWord.toLowerCase()) {
+          // Matching word
+          originalTokens.push(`<span>${originalWord}</span>`);
+          userTokens.push(`<span>${userWord}</span>`);
+          originalIndex++;
+          userIndex++;
+        } else {
+          // Use diff-match-patch to determine word differences
+          const diff = dmp.diff_main(originalWord, userWord);
+          dmp.diff_cleanupSemantic(diff);
+
+          originalTokens.push(
+            `<span style="background-color: yellow;">${originalWord}</span>`
+          );
+          userTokens.push(
+            `<span style="background-color: red; color: white;">${userWord}</span>`
+          );
+
+          originalIndex++;
+          userIndex++;
+        }
+      }
+
+      // Combine tokens back into strings
+      this.highlightedOriginal = originalTokens.join(" ");
+      this.highlightedUser = userTokens.join(" ");
+    },
     getWordClass(word) {
       // Helper function to normalize a word: remove punctuation, convert to lowercase
       const normalizeWord = (input) =>
@@ -215,16 +238,14 @@ export default {
           alert("You are not authorized. Please log in.");
           return;
         }
+        console.log("Generating script with tone:", this.selectedTone);
+        const formData = new FormData();
+        formData.append("tone", this.selectedTone);
 
         const response = await fetch("http://localhost:3000/generate-script", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include JWT token in the Authorization header
-          },
-          body: JSON.stringify({
-            tone: this.selectedTone
-          }),
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
         });
 
         const data = await response.json();
@@ -289,6 +310,9 @@ export default {
           });
         } else {
           console.error("extraWords is not an array.");
+        }
+        if (this.feedback.transcription) {
+          this.compareAndHighlight(this.script, this.feedback.transcription);
         }
         this.resetTracking(); // Reset tracking for new evaluation
       } catch (error) {

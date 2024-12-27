@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 p-6">
+  <div class="h-full bg-gray-900 p-6">
     <h2 class="text-2xl text-white mb-6">Notes</h2>
 
     <!-- Add Folder Button -->

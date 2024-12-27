@@ -1,117 +1,138 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Left Section: Script Generation -->
-    <div class="flex-grow grid grid-cols-2 gap-6">
+    <h3 class="text-2xl font-bold text-purple-700 mb-4">Speech Practice</h3>
+    <div class="flex-grow grid grid-cols-2 gap-6" style="height: 90%;" >
       <!-- Script Options and Generation -->
-      <div class="bg-gray-100 p-6 m-3 rounded">
-        <!-- Dropdown for tone -->
-        <div class="w-full flex flex-row justify-evenly gap-10">
-          <div class="w-1/2">
-            <label class="block mb-2 font-semibold">Tone:</label>
-            <select v-model="selectedTone" class="w-full mb-4 p-2 border rounded">
-              <option value="formal">Formal</option>
-              <option value="informal">Informal</option>
-              <option value="professional">Professional</option>
-              <option value="friendly">Friendly</option>
-            </select>
+      <div class="h-full">
+
+        <div class="bg-gray-100 p-6 m-3 rounded h-2/3">
+          <!-- Dropdown for tone -->
+          <div class="w-full flex flex-row justify-evenly gap-10">
+            <div class="w-1/2">
+              <label class="block mb-2 font-semibold">Tone:</label>
+              <select v-model="selectedTone" class="w-full mb-4 p-2 border rounded">
+                <option value="formal">Formal</option>
+                <option value="informal">Informal</option>
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+              </select>
+
+            </div>
+            <div class="w-1/2">
+              <label class="block mb-2 font-semibold">Difficulty:</label>
+              <select v-model="selectedLevel" class="w-full mb-4 p-2 border rounded">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+
+            </div>
 
           </div>
-          <div class="w-1/2">
-            <label class="block mb-2 font-semibold">Difficulty:</label>
-            <select v-model="selectedLevel" class="w-full mb-4 p-2 border rounded">
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
+          <div class="w-full h-3/5 max-h-3/5 overflow-y-auto scrollbar-hide shadow-sm">
 
+            <textarea v-model="script" class="resize-none w-full min-h-full max-h-full border rounded-lg p-4 focus:ring"
+              readonly></textarea>
           </div>
-
-        </div>
-        <textarea v-model="script" class="resize-none w-full h-2/5 border rounded-lg p-4 focus:ring"
-          readonly></textarea>
-        <button @click="generateScript" class="w-full mt-4 bg-purple-500 text-white rounded-lg px-4 py-2">
-          Generate Script
-        </button>
-      </div>
-
-      <!-- Audio Recording and Evaluation -->
-      <div class="bg-gray-50 p-6 m-3 rounded">
-        <audio v-if="audioBlob" controls :src="audioUrl" class="mt-6 w-full"></audio>
-        <div class="grid grid-cols-2 justify-center w-full">
-          <button @click="toggleRecording" class="col-span-1 py-4 px-2 m-3 bg-red-500 text-white rounded-lg">
-            {{ isRecording ? "Stop Recording" : "Start Recording" }}
-          </button>
-          <button @click="evaluateRecording" class="col-span-1 py-4 px-2 m-3 bg-green-500 text-white rounded-lg"
-            :disabled="!audioBlob || !script">
-            Evaluate
+          <button @click="generateScript" class="w-full mt-4 bg-purple-500 text-white rounded-lg px-4 py-2 shadow-sm">
+            Generate Script
           </button>
         </div>
-      </div>
-    </div>
-    <!-- Feedback Section -->
-    <div v-if="feedback.feedback" class="bg-gray-100 p-6 mt-4 rounded-lg shadow-md overflow-y-auto max-h-[80vh]">
-      <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
-      <!-- Circular Scores -->
-      <div class="flex justify-around mb-6">
-        <div>
-          <div class="relative flex items-center justify-center">
-            <!-- Circular Progress Bar -->
-            <circle-progress :percent="feedback.pronunciation_scores || 0" :size="150" :stroke="8" color="#4CAF50"
-              track-color="#ddd" text-color="transparent" />
-
-            <!-- Centered Text -->
-            <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
-              Pronunciation: {{ feedback.pronunciation_scores || 0 }}%
-            </span>
-          </div>
-        </div>
-        <div>
-          <div class="relative flex items-center justify-center">
-            <!-- Circular Progress Bar -->
-            <circle-progress :percent="feedback.fluency_score || 0" :size="150" :stroke="8" color="#4CAF50"
-              track-color="#ddd" text-color="transparent" />
-
-            <!-- Centered Text -->
-            <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
-              Fluency: {{ feedback.fluency_score || 0 }}%
-            </span>
-          </div>
-        </div>
-        <div>
-          <div class="relative flex items-center justify-center">
-            <!-- Circular Progress Bar -->
-            <circle-progress :percent="feedback.prosody_score || 0" :size="150" :stroke="8" color="#4CAF50"
-              track-color="#ddd" text-color="transparent" />
-
-            <!-- Centered Text -->
-            <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
-              Prosody: {{ feedback.prosody_score || 0 }}%
-            </span>
+        <!-- Audio Recording and Evaluation -->
+        <div class="bg-gray-50 p-6 m-3 rounded">
+          <audio v-if="audioBlob" controls :src="audioUrl" class="mt-6 w-full"></audio>
+          <div class="grid grid-cols-2 justify-center w-full">
+            <button @click="toggleRecording" class="col-span-1 py-4 px-2 m-3 bg-red-500 text-white rounded-lg">
+              {{ isRecording ? "Stop Recording" : "Start Recording" }}
+            </button>
+            <button @click="evaluateRecording" class="col-span-1 py-4 px-2 m-3 bg-green-500 text-white rounded-lg"
+              :disabled="!audioBlob || !script">
+              Evaluate
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Highlighted Transcription -->
-      <div class="mb-6">
-        <h4 class="text-lg font-bold">Transcription:</h4>
-        <p>
-          <span v-for="(word, index) in feedback.transcription.split(' ')" :key="index" :class="getWordClass(word)"
-            class="rounded px-2 mx-1 inline-block">
-            {{ word }}
-          </span>
-        </p>
-      </div>
-      <div class="mb-6">
-        <h3 class="text-lg font-bold">Original Script:</h3>
-        <p>{{ script }}</p>
+      <!-- Feedback Section -->
+      <div v-if="feedback.feedback"
+        class="bg-gray-100 p-6 mt-4 rounded-lg shadow-md overflow-y-auto scrollbar-hide" style="height: 90%;">
+        <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
-        <h3 class="text-lg font-bold mt-4">User Transcription:</h3>
-        <p v-html="highlightedUser"></p>
-      </div>
+        <!-- Circular Scores -->
+        <div class="flex justify-around mb-6">
+          <div>
+            <div class="relative flex items-center justify-center">
+              <!-- Circular Progress Bar -->
+              <circle-progress :percent="feedback.pronunciation_scores || 0" :size="150" :stroke="8" color="#4CAF50"
+                track-color="#ddd" text-color="transparent" />
+
+              <!-- Centered Text -->
+              <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
+                Pronunciation: {{ feedback.pronunciation_scores || 0 }}%
+              </span>
+            </div>
+          </div>
+          <div>
+            <div class="relative flex items-center justify-center">
+              <!-- Circular Progress Bar -->
+              <circle-progress :percent="feedback.fluency_score || 0" :size="150" :stroke="8" color="#4CAF50"
+                track-color="#ddd" text-color="transparent" />
+
+              <!-- Centered Text -->
+              <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
+                Fluency: {{ feedback.fluency_score || 0 }}%
+              </span>
+            </div>
+          </div>
+          <div>
+            <div class="relative flex items-center justify-center">
+              <!-- Circular Progress Bar -->
+              <circle-progress :percent="feedback.prosody_score || 0" :size="150" :stroke="8" color="#4CAF50"
+                track-color="#ddd" text-color="transparent" />
+
+              <!-- Centered Text -->
+              <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
+                Prosody: {{ feedback.prosody_score || 0 }}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlighted Transcription -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mt-4">User Transcription:</h3>
+          <p v-html="highlightedUser"></p>
+        </div>
+        <!-- Feedback Section -->
+        <div v-if="evaluationFeedback.feedback" class=" p-6 mt-4 rounded-lg shadow-md">
+          <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
+
+          <!-- Pronunciation Feedback -->
+          <div class="mb-6">
+            <h4 class="text-lg font-bold text-blue-600">Pronunciation</h4>
+            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.pronunciation.problems }}</p>
+            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.pronunciation.action }}</p>
+          </div>
+
+          <!-- Fluency Feedback -->
+          <div class="mb-6">
+            <h4 class="text-lg font-bold text-blue-600">Fluency</h4>
+            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.fluency.problems }}</p>
+            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.fluency.action }}</p>
+          </div>
+
+          <!-- Prosody Feedback -->
+          <div class="mb-6">
+            <h4 class="text-lg font-bold text-blue-600">Prosody</h4>
+            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.prosody.problems }}</p>
+            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.prosody.action }}</p>
+          </div>
+        </div>
 
 
-      <div class="mb-6">
+        <!-- <div class="mb-6">
         <h4 class="text-lg font-bold">Detailed Feedback:</h4>
         <div v-if="structuredFeedback.length">
           <div v-for="(section, index) in structuredFeedback" :key="index"
@@ -125,10 +146,10 @@
         <div v-else>
           <p>No feedback available.</p>
         </div>
+      </div> -->
+
       </div>
-
     </div>
-
   </div>
 </template>
 
@@ -152,6 +173,7 @@ export default {
       audioUrl: null,
       feedback: {},
       CircleProgress,
+      evaluationFeedback: {},
       highlightedOriginal: [], // Array to hold highlighted original script words
       highlightedUser: [],     // Array to hold highlighted user words
     };
@@ -315,85 +337,136 @@ export default {
       }
     },
     async toggleRecording() {
+      const toast = useToast(); // Get the toast instance
+
       if (!this.isRecording) {
-        Swal.fire({
-          title: "Recording...",
-          text: "Your voice recording is in progress. Click 'Stop' to finish.",
-          showCancelButton: true,
-          confirmButtonText: "Stop",
-          allowOutsideClick: false,
-          didOpen: async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            this.mediaRecorder = new MediaRecorder(stream);
-            const chunks = [];
-            this.mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-            this.mediaRecorder.onstop = () => {
-              this.audioBlob = new Blob(chunks, { type: "audio/wav" });
-              this.audioUrl = URL.createObjectURL(this.audioBlob);
-            };
-            this.mediaRecorder.start();
-            this.isRecording = true;
-          },
-        }).then((result) => {
-          if (result.isConfirmed && this.isRecording) {
-            this.mediaRecorder.stop();
-            this.isRecording = false;
-            Swal.fire({
-              icon: "success",
-              title: "Recording Stopped",
-              text: "Your voice recording has been saved.",
+        // Start Recording
+        try {
+          this.recordingToastId = toast.info("Recording in progress...", {
+            position: "top-right",
+            timeout: false, // Keep the toast visible until manually dismissed
+            closeOnClick: false, // Prevent accidental dismissal
+            pauseOnHover: false, // Prevent delay when hovering
+          });
+
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          this.mediaRecorder = new MediaRecorder(stream);
+
+          const chunks = [];
+          this.mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+          this.mediaRecorder.onstop = () => {
+            this.audioBlob = new Blob(chunks, { type: "audio/wav" });
+            this.audioUrl = URL.createObjectURL(this.audioBlob);
+
+            // Show success toast
+            toast.clear(); // Clears all visible toasts
+            toast.success("Recording saved successfully.", {
+              position: "top-right",
             });
+
+          };
+
+          this.mediaRecorder.start();
+          this.isRecording = true;
+
+          console.log("Recording started, Toast ID:", this.recordingToastId); // Debug
+        } catch (error) {
+          toast.error("Failed to start recording. Please check your microphone permissions.", {
+            position: "top-right",
+          });
+          console.error("Error starting recording:", error);
+        }
+      } else {
+        // Stop Recording
+        if (this.mediaRecorder && this.isRecording) {
+          this.mediaRecorder.stop();
+          this.isRecording = false;
+
+          if (this.recordingToastId) {
+            console.log("Dismissing Toast ID:", this.recordingToastId); // Debug
+            toast.dismiss(this.recordingToastId); // Properly dismiss the toast
+            this.recordingToastId = null; // Reset the toast ID
           }
-        });
+        }
       }
-    },
+    }
+
+    ,
+
     async evaluateRecording() {
       const formData = new FormData();
       formData.append("script", this.script);
       formData.append("audio", this.audioBlob, "recording.wav");
 
       try {
+        // Show Swal loading popup
+        Swal.fire({
+          title: "Evaluating...",
+          text: "Please wait while your recording is being evaluated.",
+          allowOutsideClick: false, // Prevent user from closing the popup
+          allowEscapeKey: false,    // Prevent closing with Escape key
+          showConfirmButton: false, // Hide the "OK" button
+          didOpen: () => {
+            Swal.showLoading(); // Display the loading spinner
+          },
+        });
+
+        // Make API request
         const response = await fetch("http://localhost:3000/evaluate", {
           method: "POST",
           body: formData,
         });
-        this.feedback = await response.json();
-        console.log("Feedback received from API:", this.feedback);
-        console.log("Missing Words:", this.feedback.fluency_metrics.missing_words);
-        console.log("Extra Words:", this.feedback.fluency_metrics.extra_words);
-        const fluencyMetrics = JSON.parse(JSON.stringify(this.feedback.fluency_metrics));
-        console.log("Missing Words:", fluencyMetrics.missing_words);
-        console.log("Extra Words:", fluencyMetrics.extra_words);
+        const data = await response.json();
+        console.log("Evaluation Data:", data);
+        console.log("Evaluation Data:", data.feedback);
+        console.log("Evaluation Data:", data.feedback.replace(/```[\s\S]*?\n|```/g, ""));
+        // Parse and handle the feedback data
+        this.feedback = data;
 
-        if (Array.isArray(this.feedback.fluency_metrics.missingWords)) {
-          console.log("Missing Words:");
-          this.feedback.fluency_metrics.missingWords.forEach((word, index) => {
-            console.log(`Word ${index + 1}: ${word}`);
-          });
+        let rawFeedback = data.feedback;
+        if (typeof rawFeedback === "string") {
+          // Step 1: Remove code block markers if present
+          rawFeedback = rawFeedback.replace(/```[\s\S]*?\n|```/g, "");
+
+          // Step 2: Fix invalid JSON quotes (replace single quotes with double quotes)
+          rawFeedback = rawFeedback.replace(/'/g, '"');
+
+          // Step 3: Parse corrected JSON string
+          try {
+            this.evaluationFeedback = JSON.parse(rawFeedback);
+            console.log("Parsed evaluation feedback:", this.evaluationFeedback);
+          } catch (error) {
+            console.error("Failed to parse evaluation feedback:", error, rawFeedback);
+            this.evaluationFeedback = {}; // Reset to avoid further errors
+          }
         } else {
-          console.error("missingWords is not an array.");
+          this.evaluationFeedback = rawFeedback || {}; // Assign directly if it's already JSON
         }
 
-        // Loop through and log extraWords
-        if (Array.isArray(this.feedback.fluency_metrics.extraWords)) {
-          console.log("Extra Words:");
-          this.feedback.fluency_metrics.extraWords.forEach((word, index) => {
-            console.log(`Word ${index + 1}: ${word}`);
-          });
-        } else {
-          console.error("extraWords is not an array.");
-        }
-        console.log("script:", this.script);
-        console.log("user script:", this.feedback.transcription);
+        // Close Swal and show success message
+        Swal.fire({
+          icon: "success",
+          title: "Evaluation Complete",
+          text: "Your evaluation results are ready!",
+          timer: 2000, // Automatically close after 2 seconds
+          showConfirmButton: false,
+        });
+
+        // Highlight differences in transcription
         this.highlightDifferences();
-        // if (this.feedback.transcription) {
-        //   this.compareAndHighlight(this.script, this.feedback.transcription);
-        // }
-        this.resetTracking(); // Reset tracking for new evaluation
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error during evaluation:", error);
+
+        // Close Swal and show error message
+        Swal.fire({
+          icon: "error",
+          title: "Evaluation Failed",
+          text: "An error occurred while evaluating your recording. Please try again.",
+        });
       }
-    },
+    }
+
+    ,
   },
   computed: {
     structuredFeedback() {
@@ -425,3 +498,17 @@ export default {
 };
 
 </script>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+</style>

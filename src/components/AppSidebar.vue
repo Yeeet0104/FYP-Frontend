@@ -95,7 +95,7 @@ export default {
           ],
         },
         { name: "Question Generation", icon: "icon-class-for-question" },
-        { name: "Login", icon: "icon-class-for-login" },
+        { name: "Notes", icon: "icon-class-for-login" }
       ],
     };
   },

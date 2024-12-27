@@ -1,9 +1,9 @@
 <template>
-  <div class="flex">
+  <div class="flex max-h-screen min-h-screen">
     <!-- Sidebar -->
     <Sidebar v-if="showSidebar" @menu-clicked="handleMenuSelection" />
     <!-- Main Content -->
-    <div class="flex-grow p-6">
+    <div class="flex-grow p-6 max-h-screen">
       <router-view />
     </div>
   </div>

@@ -4,6 +4,8 @@ import LoginUser from '@/components/LoginUser.vue';
 import RegisterUser from '@/components/RegisterUser.vue';
 import ScriptRecording from '@/components/ScriptRecording.vue';
 import QuestionGeneration from '@/components/questionGeneration.vue';
+import questionHistory from '@/components/questionHistory.vue';
+import UserProfile from '@/components/UserProfile.vue';
 import FoldersPage from '@/components/FoldersPage.vue';
 import ChapterPage from '@/components/ChapterPage.vue';
 import TreeDiagramPage from '@/components/TreeDiagramPage.vue';
@@ -14,6 +16,9 @@ const routes = [
   { path: '/login', component: LoginUser },
   { path: '/register', component: RegisterUser },
   { path: '/mock-interview', component: MockInterview, meta: { requiresAuth: true } },
+  { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } },
+  {path: '/question-history', component: questionHistory, meta: { requiresAuth: true } },
+  {path: '/user-profile', component: UserProfile, meta: { requiresAuth: true } }
   { path: '/speaking', component: ScriptRecording, meta: { requiresAuth: true } },
   { path: "/notes", component: FoldersPage, meta: { requiresAuth: true } },
   { path: "/folders/:folderId/chapters", component: ChapterPage, meta: { requiresAuth: true } },

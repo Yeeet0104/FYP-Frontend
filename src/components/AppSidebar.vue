@@ -25,7 +25,7 @@
         <ul class="space-y-2">
           <li v-for="item in menuItems" :key="item.name" class="group relative">
             <!-- Main menu item -->
-            <div class="flex items-center p-3 hover:bg-gray-700 cursor-pointer mb-6" @click="handleDropdownOrNavigation(item)">
+            <div class="flex items-center p-3 hover:bg-gray-700 cursor-pointer" @click="handleDropdownOrNavigation(item)">
               <span :class="`fas fa-${item.icon}`" class="w-6 h-6 text-gray-400"></span>
               <span class="ml-3">{{ item.name }}</span>
               <!-- Dropdown indicator -->
@@ -72,6 +72,7 @@ export default {
       icon,
       isSidebarOpen: true,
       menuItems: [
+        { name: "User Profile", icon: "user" },
         { name: "Notes", icon: "book" },
         { name: "Practice Test", icon: "pencil-alt" },
         {

@@ -223,7 +223,7 @@ export default {
 
       if (confirmDelete.isConfirmed) {
         this.deleteNode(selectedNode.id);
-        this.saveMzindMap();
+        this.saveMindMap();
       }
     },
 

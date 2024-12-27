@@ -25,7 +25,8 @@ api.interceptors.response.use(
         return api.request(error.config); // Retry the failed request
       } catch (err) {
         console.error("Failed to refresh token:", err);
-        window.location.href = "/login";
+
+        window.location.href = "/login"; // Redirect using window.location
       }
     }
     return Promise.reject(error);

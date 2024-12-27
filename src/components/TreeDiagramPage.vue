@@ -1,6 +1,9 @@
 <template>
-    <div class="bg-gray-900">
-      <h1 class="text-xl m-2 text-white">{{ chapter.name }}</h1>
+    <div>
+      <div class=" flex items-center ">
+
+        <h1 class="w-36 text-center text-2xl p-2 text-white font-medium bg-gray-900 ">{{ chapter.name }}</h1>
+      </div>
       <TreeDiagram :data="chapter.treeData" :chapterId="chapter.id"  />
     </div>
   </template>

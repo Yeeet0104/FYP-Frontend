@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <div id="jsmind_container" style="width: 100%; height: 750px ; border: 1px solid #ccc;"></div>
-
+  <div class="bg-gray-900">
     <div class="actions" style="margin-top: 20px; text-align: center;">
       <button @click="addNodePrompt" class="btn">Add Node</button>
       <button @click="editNodePrompt" class="btn">Edit Node</button>
       <button @click="deleteNodePrompt" class="btn">Delete Node</button>
       <button @click="saveMindMap" class="btn">Save Mind Map</button>
     </div>
+    <div id="jsmind_container" style="width: 100%; height: 750px ; border: 1px solid #ccc;"></div>
+
   </div>
 </template>
 

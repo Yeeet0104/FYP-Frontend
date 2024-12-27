@@ -18,7 +18,7 @@ const routes = [
   { path: "/notes", component: FoldersPage, meta: { requiresAuth: true } },
   { path: "/folders/:folderId/chapters", component: ChapterPage, meta: { requiresAuth: true } },
   { path: "/chapters/:chapterId/tree", component: TreeDiagramPage, meta: { requiresAuth: true } },
-  { path: "/TreeDiagram", component: TreeDiagram, meta: { requiresAuth: true } }
+  { path: "/TreeDiagram", component: TreeDiagram, meta: { requiresAuth: true } },
   { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } }
 ];
 

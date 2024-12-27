@@ -4,6 +4,8 @@ import LoginUser from '@/components/LoginUser.vue';
 import RegisterUser from '@/components/RegisterUser.vue';
 import ScriptRecording from '@/components/ScriptRecording.vue';
 import QuestionGeneration from '@/components/questionGeneration.vue';
+import questionHistory from '@/components/questionHistory.vue';
+import UserProfile from '@/components/UserProfile.vue';
 
 
 const routes = [
@@ -11,7 +13,9 @@ const routes = [
   { path: '/register', component: RegisterUser },
   { path: '/mock-interview', component: MockInterview, meta: { requiresAuth: true } },
   { path: '/Speaking', component: ScriptRecording, meta: { requiresAuth: true } },
-  { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } }
+  { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } },
+  {path: '/question-history', component: questionHistory, meta: { requiresAuth: true } },
+  {path: '/user-profile', component: UserProfile, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({

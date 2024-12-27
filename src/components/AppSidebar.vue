@@ -33,7 +33,7 @@
               class="flex items-center p-3 hover:bg-gray-700 cursor-pointer"
               @click="handleDropdownOrNavigation(item)"
             >
-              <span :class="`fas fa-${item.icon}`" class="w-6 h-6 text-gray-400"></span>
+              <span :class="`fas fa-${item.icon}`" class="w-6 h-3 text-gray-400"></span>
               <span class="ml-3">{{ item.name }}</span>
               <!-- Dropdown indicator -->
               <span
@@ -83,6 +83,7 @@ export default {
     return {
       isSidebarOpen: true,
       menuItems: [
+        { name: "User Profile", icon: "user" },
         { name: "Learn", icon: "book" },
         {
           name: "Practice English",

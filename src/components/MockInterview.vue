@@ -1,10 +1,10 @@
 <template>
-  <div class="mock-interview h-full">
+  <div class="mock-interview">
     <h1 class="text-2xl font-bold mb-4">Mock Interview</h1>
-    <div class="flex w-full gap-2 h-full">
+    <div class="flex w-full gap-2">
 
       <!-- Sidebar -->
-      <div class="bg-gray-900 text-white w-64 h-full flex-shrink-0 p-4">
+      <div class="bg-gray-900 text-white w-64 p-4 side-panel">
         <!-- New Conversation Button -->
         <div class="mb-4">
           <h2 class="text-lg font-bold mb-4">Conversation History</h2>
@@ -41,6 +41,14 @@
               <option value="hard">Hard</option>
             </select>
           </div>
+          <div>
+            <label for="job-description" class="block font-semibold">Job Description (Optional):</label>
+            <textarea v-model="jobDescription" class="w-full mt-2 p-2 border rounded" rows="3"></textarea>
+          </div>
+          <div>
+            <label for="skills-needed" class="block font-semibold">Skills Needed (Optional):</label>
+            <textarea v-model="skillsNeeded" class="w-full mt-2 p-2 border rounded" rows="3"></textarea>
+          </div>
         </div>
         <div v-if="audioUrl" class="mt-4">
           <button @click="playAudio" class="px-4 py-2 bg-blue-500 text-white rounded">
@@ -49,7 +57,7 @@
           <audio ref="audioPlayer" :src="audioUrl" controls style="display: none;"></audio>
         </div>
         <!-- Chat UI -->
-        <div class="chat-box bg-gray-50 border rounded p-4 h-96 overflow-y-auto">
+        <div class="chat-box bg-gray-50 border rounded p-4 h-96 ">
           <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg.sender]">
             <p :class="{
               'bg-blue-100 text-left': msg.sender === 'Bot',
@@ -72,14 +80,15 @@
       </div>
 
       <!-- Feedback Panel with Toggle -->
-      <div class="bg-gray-100 w-80 h-full flex-shrink-0 p-4 border-l">
+      <div class="bg-gray-100 w-80 h-full flex-shrink-0 p-4 border-l feedback-panel">
         <button @click="toggleFeedback" class="mb-4 w-full bg-purple-500 text-white rounded px-4 py-2">
           {{ showFeedback ? "Hide Feedback" : "Show Feedback" }}
         </button>
-        <div v-if="showFeedback" class="feedback-panel">
+        <div v-if="showFeedback">
           <h3 class="text-lg font-bold mb-2">Feedback</h3>
           <div v-for="(feedbackItem, index) in feedbackHistory" :key="index" class="mb-4">
             <p><strong>User Response:</strong> {{ feedbackItem.userMessage }}</p>
+            <p><strong>Grammar Feedback:</strong> {{ feedbackItem.grammarFeedback }}</p>
             <p><strong>Feedback:</strong> {{ feedbackItem.feedback }}</p>
           </div>
         </div>
@@ -98,9 +107,12 @@ export default {
       audioBlob: null,
       interviewScore: null,
       selectedDifficulty: "easy",
+      jobDescription: "",
+      skillsNeeded: "",
       selectedHistoryId: null, // ID of the selected conversation
       feedbackHistory: [], // Array to store feedback for each interaction
       showFeedback: true, // Toggle state for feedback panel
+      grammarFeedback: [], // Initialize grammar feedback
       conversations: [], // Initialize conversations as an empty array
       audioUrl: null, // URL for bot response audio
     };
@@ -139,6 +151,8 @@ export default {
       const formData = new FormData();
       formData.append("type", this.selectedType);
       formData.append("difficulty", this.selectedDifficulty);
+      formData.append("jobDescription", this.jobDescription);
+      formData.append("skillsNeeded", this.skillsNeeded);
       formData.append("audio", this.audioBlob, "answer.wav");
       // Include conversationId for continuing sessions
       if (this.selectedHistoryId) {
@@ -173,12 +187,14 @@ export default {
         this.feedbackHistory.push({
           userMessage: data.transcription,
           feedback: data.feedback,
+          grammarFeedback: data.grammar, // Add grammar feedback
           followUpQuestion: data.follow_up_question,
         });
 
+
         if (data.audio_filename) {
           // Fetch the audio file from the separate endpoint
-          const audioResponse = await fetch(`http://localhost:3000/get-audio/${data.audio_filename}`,{
+          const audioResponse = await fetch(`http://localhost:3000/get-audio/${data.audio_filename}`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -274,6 +290,7 @@ export default {
             this.feedbackHistory.push({
               userMessage: entry.user_message,
               feedback: entry.feedback,
+              grammarFeedback: entry.grammar,
             });
           }
         });
@@ -295,11 +312,6 @@ export default {
 </script>
 
 <style>
-.chat-box {
-  max-height: 400px;
-  overflow-y: scroll;
-}
-
 .message {
   margin: 10px 0;
   display: flex;
@@ -315,12 +327,23 @@ export default {
 }
 
 .feedback-panel {
-  max-height: calc(100% - 50px);
+  max-height: calc(100vh - 130px);
+  /* Adjust height dynamically based on viewport */
   overflow-y: auto;
+  /* Enable scrolling for overflowing content */
+  padding-right: 8px;
+  /* Add some space for the scrollbar */
+}
+
+.side-panel {
+  max-height: calc(100vh - 130px);
+  /* Adjust height dynamically based on viewport */
+  overflow-y: auto;
+  /* Enable scrolling for overflowing content */
 }
 
 .chat-box {
-  max-height: 400px;
+  min-height: 600px;
   overflow-y: scroll;
 }
 </style>

@@ -93,6 +93,8 @@ export default {
             { name: "Mock Interview" },
           ],
         },
+        { name: "Question Generation", icon: "icon-class-for-question" },
+        { name: "Notes", icon: "icon-class-for-login" }
         { name: "Practice Test", icon: "pencil-alt" },
       ],
     };

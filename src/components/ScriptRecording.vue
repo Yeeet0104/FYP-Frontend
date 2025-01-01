@@ -6,12 +6,12 @@
       <!-- Script Options and Generation -->
       <div class="h-full">
 
-        <div class="bg-gray-100 p-6 m-3 rounded h-2/3">
+        <div class="bg-gray-300 p-6 m-3 rounded h-2/3">
           <!-- Dropdown for tone -->
           <div class="w-full flex flex-row justify-evenly gap-10">
             <div class="w-1/2">
               <label class="block mb-2 font-semibold">Tone:</label>
-              <select v-model="selectedTone" class="w-full mb-4 p-2 border rounded">
+              <select v-model="selectedTone" class="w-full p-2 rounded-lg border border-black mb-2">
                 <option value="formal">Formal</option>
                 <option value="informal">Informal</option>
                 <option value="professional">Professional</option>
@@ -21,7 +21,7 @@
             </div>
             <div class="w-1/2">
               <label class="block mb-2 font-semibold">Difficulty:</label>
-              <select v-model="selectedLevel" class="w-full mb-4 p-2 border rounded">
+              <select v-model="selectedLevel" class="w-full p-2 rounded-lg border border-black mb-2">
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
@@ -32,7 +32,7 @@
           </div>
           <div class="w-full h-3/5 max-h-3/5 overflow-y-auto scrollbar-hide shadow-sm">
 
-            <textarea v-model="script" class="resize-none w-full min-h-full max-h-full border rounded-lg p-4 focus:ring"
+            <textarea v-model="script" class="resize-none w-full min-h-full max-h-full border rounded-lg border-black p-4 focus:ring"
               readonly></textarea>
           </div>
           <button @click="generateScript" class="w-full mt-4 bg-purple-500 text-white rounded-lg px-4 py-2 shadow-sm">
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Audio Recording and Evaluation -->
-        <div class="bg-gray-50 p-6 m-3 rounded">
+        <div class="bg-gray-300 p-6 m-3 rounded">
           <audio v-if="audioBlob" controls :src="audioUrl" class="mt-6 w-full"></audio>
           <div class="grid grid-cols-2 justify-center w-full">
             <button @click="toggleRecording" class="col-span-1 py-4 px-2 m-3 bg-red-500 text-white rounded-lg">
@@ -57,7 +57,7 @@
 
       <!-- Feedback Section -->
       <div v-if="feedback.feedback"
-        class="bg-gray-100 p-6 mt-4 rounded-lg shadow-md overflow-y-auto scrollbar-hide" style="height: 90%;">
+        class="bg-gray-300 p-6 mt-4 rounded-lg shadow-md overflow-y-auto scrollbar-hide" style="height: 90%;">
         <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
         <!-- Circular Scores -->
@@ -417,9 +417,14 @@ export default {
           body: formData,
         });
         const data = await response.json();
-        console.log("Evaluation Data:", data);
-        console.log("Evaluation Data:", data.feedback);
-        console.log("Evaluation Data:", data.feedback.replace(/```[\s\S]*?\n|```/g, ""));
+        if (data.error) {
+          Swal.fire({
+            icon: "error",
+            title: "Evaluation Failed",
+            text: data.error,
+          });
+          return;
+        }
         // Parse and handle the feedback data
         this.feedback = data;
 

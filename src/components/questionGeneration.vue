@@ -583,7 +583,7 @@ export default {
       bloomLevelAchieved: [],
       bloomLevelAchieved2: [],
       suggestedAnswers1: [],
-      suggestedAnswers2: []
+      suggestedAnswers2: [],
     };
   },
   computed: {
@@ -684,7 +684,7 @@ export default {
                   } else if (item.match(/^\*\*Use Case:\*\*/i)) {
                     const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase1 = useCase;
-                  }else {
+                  } else {
                     const option = item.replace(/^[A-D][).]\s*/, '');
                     currentOptions1.push(option);
                   }
@@ -720,7 +720,7 @@ export default {
                   } else if (item.match(/^\*\*Use Case:\*\*/i)) {
                     const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase1 = useCase;
-                  }else {
+                  } else {
                     const option = item.replace(/^[A-D][).]\s*/, '');
                     currentOptions1.push(option);
                   }
@@ -751,7 +751,7 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase2 = useCase;
-                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
                     const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase2 = useCase;
                   } else {
@@ -792,7 +792,7 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase1 = useCase;
-                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
                     const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase1 = useCase;
                   }
@@ -820,7 +820,7 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase2 = useCase;
-                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
                     const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase2 = useCase;
                   }
@@ -922,6 +922,7 @@ export default {
       this.bloomLevelAchieved2 = [];
       this.suggestedAnswers1 = [];
       this.suggestedAnswers2 = [];
+      this.answerIsValid = false;
     },
     async checkGrammar(index) {
       this.isCheckingGrammar = true;
@@ -996,12 +997,19 @@ export default {
       }
     },
     async toggleAnswer(index) {
+      const toast = useToast();
       this.isEvaluating = true;
       try {
         const requestBody = {};
 
         // Add file 1 data if it exists
         if (this.questionsForFile1?.[index] && this.userAnswerFile1?.[index]) {
+          const wordCount = this.userAnswerFile1[index].trim().split(/\s+/).length;
+          if (wordCount < 5) {
+            toast.error('Answer cannot be less than 5 words.');
+            this.isEvaluating = false;
+            return;
+          }
           requestBody.questionsForFile1 = this.questionsForFile1[index];
           requestBody.userAnswerFile1 = this.userAnswerFile1[index];
           requestBody.useCase1 = this.useCase1 || '';
@@ -1009,6 +1017,12 @@ export default {
 
         // Add file 2 data if it exists
         if (this.questionsForFile2?.[index] && this.userAnswerFile2?.[index]) {
+          const wordCount = this.userAnswerFile2[index].trim().split(/\s+/).length;
+          if (wordCount < 5) {
+            toast.error('Answer cannot be less than 5 words.');
+            this.isEvaluating = false;
+            return;
+          } 
           requestBody.questionsForFile2 = this.questionsForFile2[index];
           requestBody.userAnswerFile2 = this.userAnswerFile2[index];
           requestBody.useCase2 = this.useCase2 || '';
@@ -1430,6 +1444,10 @@ export default {
         const toast = useToast();
         toast.error('Failed to save MCQ questions');
       }
+    },
+    async validateAnswerLength(answer) {
+      const wordCount = answer.trim().split(/\s+/).length;
+      return wordCount < 5 || wordCount > 5;
     }
   },
   created() {

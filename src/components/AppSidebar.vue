@@ -25,7 +25,8 @@
         <ul class="space-y-2">
           <li v-for="item in menuItems" :key="item.name" class="group relative">
             <!-- Main menu item -->
-            <div class="flex items-center p-3 hover:bg-gray-700 cursor-pointer" @click="handleDropdownOrNavigation(item)">
+            <div class="flex items-center p-3 hover:bg-gray-700 cursor-pointer"
+              @click="handleDropdownOrNavigation(item)">
               <span :class="`fas fa-${item.icon}`" class="w-6 h-6 text-gray-400"></span>
               <span class="ml-3">{{ item.name }}</span>
               <!-- Dropdown indicator -->
@@ -36,12 +37,8 @@
 
             <!-- Dropdown Items -->
             <ul v-if="item.isOpen && item.children" class="space-y-2 bg-gray-800 pl-14">
-              <li
-                v-for="child in item.children"
-                :key="child.name"
-                class="p-2 hover:bg-gray-700 cursor-pointer"
-                @click="handleMenuClick(child)"
-              >
+              <li v-for="child in item.children" :key="child.name" class="p-2 hover:bg-gray-700 cursor-pointer"
+                @click="handleMenuClick(child)">
                 {{ child.name }}
               </li>
             </ul>
@@ -52,9 +49,9 @@
       <!-- Footer -->
       <div class="border-t border-gray-700 p-4">
         <div class="flex items-center">
-          <img :src="profilePictureUrl" alt="Profile Picture" class="w-8 h-8 rounded-full object-cover" />
+          <img :src="profilePictureUrl" alt="Profile Picture" class="w-10 h-10 rounded-full object-cover" />
           <div class="ml-3">
-            <p class="text-sm font-bold">Bharat</p>
+            <p class="text-sm text-white font-bold">{{ username }}</p>
           </div>
         </div>
       </div>
@@ -131,6 +128,9 @@ export default {
         console.error("Error fetching user data:", error.response ? error.response.data : error.message);
       }
     }
+  },
+  created() {
+    this.fetchUser();
   },
 };
 </script>

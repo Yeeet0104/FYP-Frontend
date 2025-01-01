@@ -15,7 +15,6 @@ const routes = [
   { path: '/login', component: LoginUser },
   { path: '/register', component: RegisterUser },
   { path: '/mock-interview', component: MockInterview, meta: { requiresAuth: true } },
-  { path: '/practice-test', component: QuestionGeneration, meta: { requiresAuth: true } },
   {path: '/user-profile', component: UserProfile, meta: { requiresAuth: true } },
   { path: '/speaking', component: ScriptRecording, meta: { requiresAuth: true } },
   { path: "/notes", component: FoldersPage, meta: { requiresAuth: true } },

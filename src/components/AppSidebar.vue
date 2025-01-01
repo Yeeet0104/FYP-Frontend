@@ -74,7 +74,6 @@ export default {
       username: '',
       isSidebarOpen: true,
       menuItems: [
-        { name: "User Profile", icon: "user" },
         { name: "Notes", icon: "book" },
         { name: "Practice Test", icon: "pencil-alt" },
         {
@@ -86,6 +85,7 @@ export default {
             { name: "Mock Interview" },
           ],
         },
+        { name: "User Profile", icon: "user" },
       ],
     };
   },

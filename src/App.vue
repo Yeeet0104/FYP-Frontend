@@ -20,6 +20,15 @@ export default {
       selectedMenu: null, // Tracks the selected menu or dropdown item
     };
   },
+  mounted() {
+    // Check if the user is visiting for the first time
+
+    // Redirect to the desired page
+    this.$router.push("/notes");
+
+
+
+  },
   methods: {
     handleMenuSelection(menuName) {
       // Update selected menu

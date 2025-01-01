@@ -646,7 +646,7 @@ export default {
         formData.append('includeUseCase', this.includeUseCase);
 
         try {
-          const response = await axios.post('http://localhost:8000/generate-questions', formData, {
+          const response = await axios.post('http://localhost:8003/generate-questions', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }

@@ -8,11 +8,11 @@
       <div class="flex w-full gap-2 h-full overflow-y-auto scrollbar-hide rounded-lg">
 
         <!-- Sidebar -->
-        <div class="bg-gray-100 w-64 p-4 side-panel rounded-lg h-full overflow-y-auto scrollbar-hide">
+        <div class="bg-gray-300 w-64 p-4 side-panel rounded-lg h-full overflow-y-auto scrollbar-hide">
           <!-- New Conversation Button -->
           <div class="mb-4">
             <h2 class="text-lg font-bold mb-4">Conversation History</h2>
-            <button @click="startNewConversation" class="px-4 py-2 bg-red-500 text-white rounded">
+            <button @click="startNewConversation" class="px-4 w-full py-2 bg-green-500 text-white rounded">
               Start New Conversation
             </button>
           </div>
@@ -21,7 +21,8 @@
               @click="loadConversation(conversation.conversation_id)" :class="{
                 'bg-blue-200 text-blue-900': selectedHistoryId === conversation.conversation_id,
                 'bg-white text-gray-700': selectedHistoryId !== conversation.conversation_id,
-              }" class="cursor-pointer p-2 hover:bg-gray-700 hover:text-white rounded text-lg font-medium mb-2 flex justify-between items-center">
+              }"
+              class="cursor-pointer p-2 hover:bg-gray-700 hover:text-white rounded text-base font-medium mb-2 flex justify-between items-center">
               <span>
                 {{ formatDate(conversation.timestamp) }} - {{ conversation.name || `Session
                 ${conversation.conversation_id}` }}
@@ -36,15 +37,15 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 bg-gray-100 overflow-y-auto scrollbar-hide rounded-lg p-3 pb-5">
+        <div class="flex-1 bg-gray-300 overflow-y-auto scrollbar-hide rounded-lg p-3 pb-5">
           <!-- Placeholder when no conversation is active -->
           <div v-if="!conversationSettings.name" class="flex flex-col items-center justify-center h-full">
             <img :src="cat" alt="Start Conversation" class="w-48 h-48 mb-4 rounded" />
-            <p class="text-lg">Start a conversation to begin your mock interview!</p>
+            <p class="text-xl">Start a conversation to begin your mock interview!</p>
           </div>
 
           <!-- Chat and Settings when a conversation is active -->
-          <div v-else class="h-full  bg-gray-100 m-3">
+          <div v-else class="h-full  bg-gray-300 m-3">
             <div class="mb-4 flex gap-4 justify-between">
               <div>
                 <button @click="showConversationSettings" class="px-4 py-2 bg-gray-500 text-white rounded">
@@ -138,6 +139,8 @@
 <script>
 import Swal from "sweetalert2";
 import cat from "@/assets/CAT.jpeg";
+import { useToast } from "vue-toastification"; // Add at the top
+
 export default {
   data() {
     return {
@@ -205,11 +208,45 @@ export default {
         this.currentFeedbackPage--;
       }
     },
-    toggleRecording() {
+    async toggleRecording() {
+      const toast = useToast(); // Get the toast instance
       if (!this.isRecording) {
-        this.startRecording();
+        // Start Recording
+        try {
+          this.recordingToastId = toast.info("Recording in progress...", {
+            position: "top-right",
+            timeout: false, // Keep the toast visible until dismissed
+            closeOnClick: false,
+          });
+
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          this.mediaRecorder = new MediaRecorder(stream);
+
+          const chunks = [];
+          this.mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+          this.mediaRecorder.onstop = () => {
+            this.audioBlob = new Blob(chunks, { type: "audio/wav" });
+            toast.clear(); // Clears all visible toasts
+            toast.success("Recording saved successfully.", { position: "top-right" });
+          };
+
+          this.mediaRecorder.start();
+          this.isRecording = true;
+        } catch (error) {
+          toast.error("Failed to start recording. Please check your microphone permissions.", { position: "top-right" });
+          console.error("Error starting recording:", error);
+        }
       } else {
-        this.stopRecording();
+        // Stop Recording
+        if (this.mediaRecorder && this.isRecording) {
+          this.mediaRecorder.stop();
+          this.isRecording = false;
+
+          if (this.recordingToastId) {
+            toast.dismiss(this.recordingToastId); // Properly dismiss the toast
+            this.recordingToastId = null;
+          }
+        }
       }
     },
     async startNewConversation() {
@@ -281,7 +318,17 @@ export default {
       formData.append("history", JSON.stringify(this.chatHistory));
       // Add User's answer placeholder while processing
       this.chatHistory.push({ sender: "User", text: "Processing your answer..." });
-
+      // Show Swal loading popup
+      Swal.fire({
+        title: "Processing...",
+        text: "Your answer is being processed. Please wait.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading(); // Display loading spinner
+        },
+      });
       try {
         const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:3000/mock-interview", {
@@ -290,7 +337,7 @@ export default {
           body: formData,
         });
         const data = await response.json();
-
+        Swal.close(); // Close the Swal popup
         // Replace placeholder with transcribed answer
         const userMessage = data.transcription;
         this.chatHistory[this.chatHistory.length - 1].text = userMessage;
@@ -332,6 +379,11 @@ export default {
 
       } catch (error) {
         console.error("Error sending recording:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Submission Failed",
+          text: "An error occurred. Please try again.",
+        });
       }
     },
     async deleteConversation(conversationId) {

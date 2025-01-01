@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-full overflow-y-auto">
     <!-- Tabs Navigation -->
     <div class="mt-4 bg-gray-200 p-1.5 rounded-lg">
       <nav class="flex justify-center space-x-4">
@@ -171,7 +171,7 @@
                     class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg font-medium transition-colors">
                     Check Grammar
                   </button>
-                  <button @click="checkAnswer(index, 1)"
+                  <button @click="toggleAnswer(index)"
                     class="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors">
                     Check Answer
                   </button>
@@ -184,7 +184,7 @@
 
                   <div v-if="userAnswerScore[index] !== 'Correct'" class="mt-4 pt-4 border-t border-green-200">
                     <p class="font-semibold text-gray-900">Suggested Answer:</p>
-                    <p class="mt-2 text-gray-700">{{ answersFile1[index] }}</p>
+                    <p class="mt-2 text-gray-700">{{ suggestedAnswers1[index] }}</p>
                   </div>
                 </div>
               </div>
@@ -194,7 +194,7 @@
 
         <!-- Scenario Case 2 Box -->
         <div v-if="useCase2 && questionType === 'Short Answer'"
-          class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 mb-8 border border-blue-200">
+          class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl mt-10 p-6 mb-8 border border-blue-200">
           <div class="flex items-center gap-2 mb-3">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -242,7 +242,7 @@
                     class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg font-medium transition-colors">
                     Check Grammar
                   </button>
-                  <button @click="checkAnswer(index, 2)"
+                  <button @click="toggleAnswer(index)"
                     class="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors">
                     Check Answer
                   </button>
@@ -255,7 +255,7 @@
 
                   <div v-if="userAnswerScore2[index] !== 'Correct'" class="mt-4 pt-4 border-t border-green-200">
                     <p class="font-semibold text-gray-900">Suggested Answer:</p>
-                    <p class="mt-2 text-gray-700">{{ answersFile2[index] }}</p>
+                    <p class="mt-2 text-gray-700">{{ suggestedAnswers2[index] }}</p>
                   </div>
                 </div>
               </div>
@@ -390,7 +390,7 @@
 
         <!-- Mark MCQ Button -->
         <div v-if="checkAnsBtnVisible && questionsForFile1.length > 0" class="mt-5 flex justify-end">
-          <button class="rounded-sm bg-[#86c9e8] text-gray-900 px-2 py-2 mb-2 mr-5 text-sm font-semibold"
+          <button class="rounded-lg bg-black text-white px-5 py-2 mb-2 mr-5 text-sm font-semibold"
             @click="checkMCQAns">Check Answers</button>
         </div>
       </div>
@@ -581,7 +581,9 @@ export default {
       storeQuestion1: [],
       storeQuestion2: [],
       bloomLevelAchieved: [],
-      bloomLevelAchieved2: []
+      bloomLevelAchieved2: [],
+      suggestedAnswers1: [],
+      suggestedAnswers2: []
     };
   },
   computed: {
@@ -679,7 +681,10 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase1 = useCase;
-                  } else {
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
+                    this.useCase1 = useCase;
+                  }else {
                     const option = item.replace(/^[A-D][).]\s*/, '');
                     currentOptions1.push(option);
                   }
@@ -712,7 +717,10 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase1 = useCase;
-                  } else {
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
+                    this.useCase1 = useCase;
+                  }else {
                     const option = item.replace(/^[A-D][).]\s*/, '');
                     currentOptions1.push(option);
                   }
@@ -742,6 +750,9 @@ export default {
                     this.mcqAnswersForFile2.push(item.replace('Answer: ', '').trim());
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                    this.useCase2 = useCase;
+                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase2 = useCase;
                   } else {
                     const option = item.replace(/^[A-D][).]\s*/, '');
@@ -781,6 +792,9 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase1 = useCase;
+                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
+                    this.useCase1 = useCase;
                   }
                 });
 
@@ -806,6 +820,9 @@ export default {
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
                     this.useCase2 = useCase;
+                  }else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
+                    this.useCase2 = useCase;
                   }
                 });
               } else {
@@ -830,6 +847,9 @@ export default {
                     }
                   } else if (item.match(/^Use Case:/i)) {
                     const useCase = item.replace(/^Use Case:\s*/i, "").trim();
+                    this.useCase1 = useCase;
+                  } else if (item.match(/^\*\*Use Case:\*\*/i)) {
+                    const useCase = item.replace(/^\*\*Use Case:\*\*\s*/i, "").trim();
                     this.useCase1 = useCase;
                   }
                 });
@@ -900,6 +920,8 @@ export default {
       this.storeQuestion2 = [];
       this.bloomLevelAchieved = [];
       this.bloomLevelAchieved2 = [];
+      this.suggestedAnswers1 = [];
+      this.suggestedAnswers2 = [];
     },
     async checkGrammar(index) {
       this.isCheckingGrammar = true;
@@ -974,6 +996,7 @@ export default {
       }
     },
     async toggleAnswer(index) {
+      this.isEvaluating = true;
       try {
         const requestBody = {};
 
@@ -1012,8 +1035,21 @@ export default {
           const evaluation = response.data.evaluation;
           const evaluationContent = evaluation.replace(/^Evaluation:\s*/, '').trim();
 
-          this.answersEvaluation[index] = evaluationContent;
+          // Find the position of "Suggested Answer:" and extract content up to that point
+          const suggestedAnswerIndex = evaluationContent.search(/Suggested Answer:/i);
+          const finalEvaluationContent = suggestedAnswerIndex !== -1
+            ? evaluationContent.substring(0, suggestedAnswerIndex).trim()
+            : evaluationContent;
+
+          this.answersEvaluation[index] = finalEvaluationContent;
           const scoreMatch = evaluation.match(/Score:\s*(\w+)/);
+
+          const suggestedAnswerMatch = evaluation.match(/Suggested Answer:\s*(.*)/i);
+
+          if (suggestedAnswerMatch && suggestedAnswerMatch[1]) {
+            this.suggestedAnswers1[index] = suggestedAnswerMatch[1].trim();
+          }
+
           if (scoreMatch) {
             const score = scoreMatch[1];
             this.userAnswerScore[index] = score;
@@ -1024,9 +1060,23 @@ export default {
           // Extract the evaluation content
           const evaluation2 = response.data.evaluation2;
           const evaluationContent2 = evaluation2.replace(/^Evaluation:\s*/, '').trim();
-          this.answersEvaluation2[index] = evaluationContent2;
+
+          // Find the position of "Suggested Answer:" and extract content up to that point
+          const suggestedAnswerIndex2 = evaluationContent2.search(/Suggested Answer:/i);
+          const finalEvaluationContent2 = suggestedAnswerIndex2 !== -1
+            ? evaluationContent2.substring(0, suggestedAnswerIndex2).trim()
+            : evaluationContent2;
+
+          this.answersEvaluation2[index] = finalEvaluationContent2;
 
           const scoreMatch2 = evaluation2.match(/Score:\s*(\w+)/);
+
+          const suggestedAnswerMatch2 = evaluation2.match(/Suggested Answer:\s*(.*)/i);
+
+          if (suggestedAnswerMatch2 && suggestedAnswerMatch2[1]) {
+            this.suggestedAnswers2[index] = suggestedAnswerMatch2[1].trim();
+          }
+
           if (scoreMatch2) {
             const score2 = scoreMatch2[1];
             this.userAnswerScore2[index] = score2;

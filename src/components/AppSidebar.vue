@@ -52,10 +52,9 @@
       <!-- Footer -->
       <div class="border-t border-gray-700 p-4">
         <div class="flex items-center">
-          <img src="-" alt="User Avatar" class="w-10 h-10 rounded-full" />
+          <img :src="profilePictureUrl" alt="Profile Picture" class="w-8 h-8 rounded-full object-cover" />
           <div class="ml-3">
             <p class="text-sm font-bold">Bharat</p>
-            <p class="text-xs text-gray-400">More</p>
           </div>
         </div>
       </div>
@@ -65,11 +64,14 @@
 
 
 <script>
+import axios from 'axios';
 import icon from "@/assets/icon.webp";
 export default {
   data() {
     return {
       icon,
+      profilePictureUrl: '',
+      username: '',
       isSidebarOpen: true,
       menuItems: [
         { name: "User Profile", icon: "user" },
@@ -104,6 +106,31 @@ export default {
         this.handleMenuClick(item);
       }
     },
+    async fetchUser() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("Token is missing.");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:3000/fetch-user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const userData = response.data.userData;
+        this.username = userData.username;
+        this.profilePictureUrl = userData.profilePictureUrl || '';
+      } catch (error) {
+        console.error("Error fetching user data:", error.response ? error.response.data : error.message);
+      }
+    }
   },
 };
 </script>

@@ -1,7 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
-
-    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md">
+  <div class="h-full overflow-y-auto bg-gray-50 p-6">
+    <div class="max-w-4xl mx-auto bg-gray-100 rounded-xl shadow-md">
       <div class="border-t border-b rounded-xl px-6 py-3 flex items-center">
         <button class="text-blue-600 font-medium border-b-2 border-blue-600 py-2">
           Profile
@@ -90,7 +89,7 @@
     </div>
 
     <!-- Content Section -->
-    <div class="max-w-4xl mt-10 mx-auto border-t bg-white rounded-lg shadow-md p-6">
+    <div class="max-w-4xl mt-10 mx-auto border-t bg-gray-100 rounded-lg shadow-md p-6">
       <div class="space-y-6">
         <div>
           <h3 class="text-lg font-medium text-gray-900">Details</h3>
@@ -104,7 +103,7 @@
             <dd class="text-sm text-gray-900">
               <div class="relative">
                 <!-- Input Field -->
-                 <span v-if="!isEditingEmail" class="mt-1 block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                 <span v-if="!isEditingEmail" class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                   {{ email }}
                  </span>
                 <input type="text" v-if="isEditingEmail" v-model="newEmail"

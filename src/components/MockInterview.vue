@@ -72,9 +72,25 @@
             <!-- Chat UI -->
             <div class="chat-box bg-gray-50 border rounded p-4 text-lg font-medium overflow-y-auto scrollbar-hide">
               <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg.sender]">
+                <!-- Avatar Circle -->
+                <div v-if="msg.sender === 'Bot'" class="flex-shrink-0 mr-3 flex items-center gap-2 m-1">
+                  <img :src="msg.sender === 'Bot' ? interviewer : profilePictureUrl" alt="Avatar"
+                    class="w-10 h-10 rounded-full" />
+                    
+                    <p v-if="msg.sender === 'Bot'" class="text-sm text-gray-500">{{ msg.sender }}</p>
+                    <p v-else class="text-sm text-gray-500">{{ username }}</p>
+                </div>
+                <div v-else class="flex-shrink-0 ml-3 flex items-center gap-2 m-1">
+                  <p v-if="msg.sender === 'Bot'" class="text-sm text-gray-500">{{ msg.sender }}</p>
+                  <p v-else class="text-sm text-gray-500">{{ username }}</p>
+                  <img :src="msg.sender === 'Bot' ? interviewer : profilePictureUrl" alt="Avatar"
+                    class="w-10 h-10 rounded-full" />
+
+                </div>
+                <!-- Message Bubble -->
                 <p :class="{
-                  'bg-blue-100 text-left': msg.sender === 'Bot',
-                  'bg-green-100 text-right': msg.sender === 'User'
+                  'bg-blue-100 text-justify': msg.sender === 'Bot',
+                  'bg-green-100 text-justify': msg.sender === 'User'
                 }" class="inline-block p-2 rounded-lg max-w-xs">
                   {{ msg.text }}
                 </p>
@@ -140,7 +156,8 @@
 import Swal from "sweetalert2";
 import cat from "@/assets/CAT.jpeg";
 import { useToast } from "vue-toastification"; // Add at the top
-
+import interviewer from "@/assets/interviewer.png";
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -149,6 +166,9 @@ export default {
       chatHistory: [{ sender: "Bot", text: "Welcome to your mock interview! Please introduce yourself." }],
       isRecording: false,
       audioBlob: null,
+      interviewer,
+      profilePictureUrl: '',
+      username: '',
       interviewScore: null,
       selectedDifficulty: "easy",
       jobDescription: "",
@@ -187,7 +207,7 @@ export default {
       Swal.fire({
         title: "Conversation Settings",
         html: `
-          <div >
+          <div class="text-justify gap-2 flex flex-col items-jusitfy justify-center" >
             <p><strong>Name:</strong> ${this.conversationSettings.name}</p>
             <p><strong>Job Description:</strong> ${this.conversationSettings.jobDescription || "Not provided"}</p>
             <p><strong>Difficulty:</strong> ${this.conversationSettings.difficulty || "Not set"}</p>
@@ -196,7 +216,31 @@ export default {
         confirmButtonText: "Close",
       });
     },
+    async fetchUser() {
+      try {
+        const token = localStorage.getItem("token");
 
+        if (!token) {
+          console.error("Token is missing.");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:3000/fetch-user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const userData = response.data.userData;
+        this.username = userData.username;
+        this.profilePictureUrl = userData.profilePictureUrl || '';
+      } catch (error) {
+        console.error("Error fetching user data:", error.response ? error.response.data : error.message);
+      }
+    },
 
     nextFeedback() {
       if (this.currentFeedbackPage < this.totalFeedbackPages) {
@@ -496,10 +540,14 @@ export default {
         });
 
         // Populate conversation settings or use defaults
+        console.log("Conversation Data:", data.history[0]);
+        console.log("name Data:", data.history[0].name);
+        console.log("job_description Data:", data.history[0].job_description);
+        console.log("difficulty Data:", data.history[0].difficulty);
         this.conversationSettings = {
-          name: data?.name || `Session ${conversationId}`,
-          jobDescription: data?.jobDescription || "No job description provided",
-          difficulty: data?.difficulty || "easy",
+          name: data.history[0]?.name || `Session ${conversationId}`,
+          jobDescription: data.history[0]?.job_description || "No job description provided",
+          difficulty: data.history[0]?.difficulty || "easy",
         };
 
         console.log("Conversation Settings:", this.conversationSettings);
@@ -524,6 +572,9 @@ export default {
   },
   mounted() {
     this.fetchConversations();
+  },
+  created() {
+    this.fetchUser();
   },
 };
 </script>

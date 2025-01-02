@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-gray-900">
-    <div class="actions" style="margin-top: 20px; text-align: center;">
+  <div class="bg-gray-300">
+    <div class="actions" style=" text-align: center;">
       <button @click="addNodePrompt" class="btn">Add Node</button>
       <button @click="editNodePrompt" class="btn">Edit Node</button>
       <button @click="deleteNodePrompt" class="btn">Delete Node</button>
@@ -416,5 +416,18 @@ export default {
   /* Optional: Change text color for contrast */
   border-radius: 5px;
   /* Optional: Add rounded corners */
+}
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 </style>

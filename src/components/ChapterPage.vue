@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-gray-900 text-white p-6 overflow-y-auto">
+  <div class="h-full bg-gray-300 text-white p-6 overflow-y-auto">
     <!-- Folder Name -->
     <h2 class="text-3xl font-bold mb-6 text-purple-400">{{ folder.name }}</h2>
 
@@ -8,9 +8,15 @@
       class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 px-4 rounded-lg shadow hover:shadow-lg hover:from-purple-600 hover:to-indigo-700 transition duration-300 mb-4">
       + Add Chapter
     </button>
-
+    <!-- Conditional Rendering -->
+    <div v-if="folder.chapters.length === 0" class="h-full flex flex-col items-center mt-10">
+      <!-- Placeholder Image -->
+      <img :src="imageSrc" alt="No Chapters" class="w-96 h-64 mb-4" />
+      <!-- Placeholder Text -->
+      <p class="text-lg text-gray-400">No chapters available. Click "Add Chapter" to create one.</p>
+    </div>
     <!-- List of Chapters -->
-    <ul class="space-y-4">
+    <ul v-else class="space-y-4">
       <li v-for="chapter in folder.chapters" :key="chapter.id"
         class="flex justify-between items-center bg-gray-800 rounded-lg p-4 shadow-md hover:shadow-lg transition duration-300">
         <span @click="goToTree(chapter)" class="cursor-pointer text-lg font-semibold hover:text-purple-400">
@@ -29,9 +35,12 @@
 <script>
 import api from '@/api/api';
 import Swal from "sweetalert2";
+import imageSrc from "@/assets/homepage.png";
+
 export default {
   data() {
     return {
+      imageSrc,
       folder: {
         id: this.$route.params.folderId, // Extract folder ID from route
         name: this.$route.params.name,

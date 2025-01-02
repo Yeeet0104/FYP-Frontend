@@ -57,7 +57,7 @@
 
       <!-- Feedback Section -->
       <div v-if="feedback.feedback"
-        class="bg-gray-300 p-6 mt-4 rounded-lg shadow-md overflow-y-auto scrollbar-hide" style="height: 90%;">
+        class="bg-gray-300 p-6 mt-4 rounded-lg shadow-md overflow-y-auto scrollbar-hide text-justify" style="height: 90%;">
         <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
         <!-- Circular Scores -->
@@ -66,7 +66,7 @@
             <div class="relative flex items-center justify-center">
               <!-- Circular Progress Bar -->
               <circle-progress :percent="feedback.pronunciation_scores || 0" :size="150" :stroke="8" color="#4CAF50"
-                track-color="#ddd" text-color="transparent" />
+                track-color="#FFFFFF" text-color="transparent" />
 
               <!-- Centered Text -->
               <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
@@ -78,7 +78,7 @@
             <div class="relative flex items-center justify-center">
               <!-- Circular Progress Bar -->
               <circle-progress :percent="feedback.fluency_score || 0" :size="150" :stroke="8" color="#4CAF50"
-                track-color="#ddd" text-color="transparent" />
+                track-color="#FFFFFF" text-color="transparent" />
 
               <!-- Centered Text -->
               <span class="absolute text-center text-lg w-3/4 font-bold text-purple-700">
@@ -101,33 +101,33 @@
         </div>
 
         <!-- Highlighted Transcription -->
-        <div class="mb-6">
-          <h3 class="text-lg font-bold mt-4">User Transcription:</h3>
+        <div class="mb-5 bg-white p-6 rounded text-justify">
+          <h3 class="text-lg font-bold mb-2 text-purple-700">Transcription Correction:</h3>
           <p v-html="highlightedUser"></p>
         </div>
         <!-- Feedback Section -->
-        <div v-if="evaluationFeedback.feedback" class=" p-6 mt-4 rounded-lg shadow-md">
+        <div v-if="evaluationFeedback.feedback" class=" p-6 mt-4 rounded-lg shadow-md bg-white">
           <h3 class="text-2xl font-bold text-purple-700 mb-4">Evaluation Feedback</h3>
 
           <!-- Pronunciation Feedback -->
           <div class="mb-6">
             <h4 class="text-lg font-bold text-blue-600">Pronunciation</h4>
-            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.pronunciation.problems }}</p>
-            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.pronunciation.action }}</p>
+            <p class="text-semibold"><strong>Problems:</strong> {{ evaluationFeedback.feedback.pronunciation.problems }}</p>
+            <p class="text-semibold"><strong>Action:</strong> {{ evaluationFeedback.feedback.pronunciation.action }}</p>
           </div>
 
           <!-- Fluency Feedback -->
           <div class="mb-6">
             <h4 class="text-lg font-bold text-blue-600">Fluency</h4>
-            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.fluency.problems }}</p>
-            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.fluency.action }}</p>
+            <p class="text-semibold"><strong>Problems:</strong> {{ evaluationFeedback.feedback.fluency.problems }}</p>
+            <p class="text-semibold"><strong>Action:</strong> {{ evaluationFeedback.feedback.fluency.action }}</p>
           </div>
 
           <!-- Prosody Feedback -->
           <div class="mb-6">
             <h4 class="text-lg font-bold text-blue-600">Prosody</h4>
-            <p><strong>Problems:</strong> {{ evaluationFeedback.feedback.prosody.problems }}</p>
-            <p><strong>Action:</strong> {{ evaluationFeedback.feedback.prosody.action }}</p>
+            <p class="text-semibold"><strong>Problems:</strong> {{ evaluationFeedback.feedback.prosody.problems }}</p>
+            <p class="text-semibold"><strong>Action:</strong> {{ evaluationFeedback.feedback.prosody.action }}</p>
           </div>
         </div>
 
@@ -211,7 +211,7 @@ export default {
         if (operation === 0) {
           // No changes
           originalWords.push(`<span>${text}</span>`);
-          userWords.push(`<span>${text}</span>`);
+          userWords.push(`<span >${text}</span>`);
         } else if (operation === -1) {
           // Missing words
           originalWords.push(`<span class="bg-yellow-300 text-black">${text}</span>`);
@@ -234,15 +234,15 @@ export default {
       diff.forEach(([operation, text]) => {
         if (operation === 0) {
           // Correct words (green)
-          userParts.push(`<span style="color: green;">${text}</span>`);
+          userParts.push(`<span class="text-lg font-medium" style="color: green;">${text}</span>`);
         } else if (operation === -1) {
           // Missing words (indicated in original but not in user text)
           userParts.push(
-            `<span style="color: red; text-decoration: line-through;">${text}</span>`
+            `<span class="text-lg font-medium"  style="color: red; text-decoration: line-through;">${text}</span>`
           );
         } else if (operation === 1) {
           // Extra words (red)
-          userParts.push(`<span style="color: red;">${text}</span>`);
+          userParts.push(`<span class="text-lg font-medium"  style="background: yellow; color : red">${text}</span>`);
         }
       });
 

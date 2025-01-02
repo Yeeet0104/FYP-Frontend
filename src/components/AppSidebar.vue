@@ -71,6 +71,7 @@ export default {
       username: '',
       isSidebarOpen: true,
       menuItems: [
+        { name: "Home", icon: "home" },
         { name: "Notes", icon: "book" },
         { name: "Practice Test", icon: "pencil-alt" },
         {
@@ -94,7 +95,12 @@ export default {
     },
     handleMenuClick(item) {
       const route = item.name.toLowerCase().replace(" ", "-");
-      this.$router.push(`/${route}`);
+      if(route == "home"){
+        this.$router.push(`/`);
+      }else{
+
+        this.$router.push(`/${route}`);
+      }
     },
     handleDropdownOrNavigation(item) {
       if (item.children) {

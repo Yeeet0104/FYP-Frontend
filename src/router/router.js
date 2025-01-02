@@ -9,9 +9,11 @@ import FoldersPage from '@/components/FoldersPage.vue';
 import ChapterPage from '@/components/ChapterPage.vue';
 import TreeDiagramPage from '@/components/TreeDiagramPage.vue';
 import TreeDiagram from '@/components/TreeDiagram.vue';
+import home from '@/components/home.vue';
 import axios from 'axios';
 
 const routes = [
+  { path: '/', component: home },
   { path: '/login', component: LoginUser },
   { path: '/register', component: RegisterUser },
   { path: '/mock-interview', component: MockInterview, meta: { requiresAuth: true } },

@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full bg-gray-900 p-6">
-    <h2 class="text-2xl text-white mb-6">Notes</h2>
+  <div class="h-full bg-gray-300 p-6">
+    <h2 class="font-bold text-2xl text-purple-700 mb-6">Notes</h2>
 
     <!-- Add Folder Button -->
     <button

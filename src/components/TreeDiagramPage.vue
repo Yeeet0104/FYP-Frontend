@@ -2,7 +2,7 @@
     <div>
       <div class=" flex items-center ">
 
-        <h1 class="w-36 text-center text-2xl p-2 text-white font-medium bg-gray-900 ">{{ chapter.name }}</h1>
+        <h1 class="w-36 text-center text-2xl p-2 text-black font-medium bg-gray-300 ">{{ chapter.name }}</h1>
       </div>
       <TreeDiagram :data="chapter.treeData" :chapterId="chapter.id"  />
     </div>
